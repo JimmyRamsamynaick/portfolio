@@ -220,7 +220,7 @@ live-server
 
 ## 📝 Changelog
 
-### Version 1.0.0 (2025-01-20)
+### Version 1.0.0 (2025-07-19)
 - ✅ Design initial avec mode sombre
 - ✅ Sections complètes (Hero, About, Skills, Projects, Contact)
 - ✅ Formulaire de contact fonctionnel
