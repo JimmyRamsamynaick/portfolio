@@ -9,6 +9,7 @@
 [![JavaScript](https://img.shields.io/badge/JavaScript-F7DF1E?logo=javascript&logoColor=black)](https://developer.mozilla.org/en-US/docs/Web/JavaScript)
 
 </div>
+
 > Portfolio personnel de Jimmy Ramsamynaick - Développeur & Technicien Système Réseau Sécurité
 
 ## 👨‍💻 À propos
