@@ -74,10 +74,7 @@ portfolio/
 ├── js/                 # Dossier JavaScript
 │   └── script.js      # JavaScript
 ├── README.md          # Documentation
-├── LICENSE            # Licence MIT
-└── assets/            # Ressources (si ajoutées)
-    ├── images/
-    └── icons/
+└── LICENSE            # Licence MIT
 ```
 
 ## 🚀 Installation & Utilisation
