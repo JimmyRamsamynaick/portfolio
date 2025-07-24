@@ -1,46 +1,138 @@
-// script.js
+// Configuration des pistes audio
+const musicTracks = [
+    {
+        title: 'Menace Santana - Vendredi 13 Mai 2022',
+        url: './audio/menace-santana.mp3',
+        fallback: false // Maintenant on essaie directement les vrais fichiers
+    },
+    {
+        title: 'Eminem - The Real Slim Shady',
+        url: './audio/eminem-slim-shady.mp3',
+        fallback: false // Maintenant on essaie directement les vrais fichiers
+    }
+];
+
+// Variables globales
+let currentTrackIndex = 0;
+let isPlaying = false;
+let audioContext = null;
+let currentAudio = null;
+
+// Debug pour vérifier les changements
+function debugTrackChange() {
+    console.log('🎵 Track changed to:', currentTrackIndex, musicTracks[currentTrackIndex].title);
+
+    // Forcer la mise à jour immédiate de tous les éléments
+    const playerTrackTitle = document.getElementById('player-track-title');
+    const entranceTrackTitle = document.getElementById('entrance-track-title');
+    const currentTrack = musicTracks[currentTrackIndex];
+
+    if (playerTrackTitle && currentTrack) {
+        playerTrackTitle.textContent = currentTrack.title;
+        console.log('✅ Updated main player title to:', currentTrack.title);
+    }
+
+    if (entranceTrackTitle && currentTrack) {
+        entranceTrackTitle.textContent = currentTrack.title;
+        console.log('✅ Updated entrance player title to:', currentTrack.title);
+    }
+}
+
+// Initialisation
 document.addEventListener('DOMContentLoaded', function() {
-    // Navigation mobile toggle
-    const mobileMenu = document.getElementById('mobile-menu');
-    const navMenu = document.querySelector('.nav-menu');
+    initTheme();
+    initNavigation();
+    initAudioPlayer(); // Lecteur principal
+    initEntranceAudioPlayer(); // Lecteur entrance
+    initParticles();
+    initScrollAnimations();
+    initTypingEffect();
 
-    mobileMenu.addEventListener('click', function() {
-        mobileMenu.classList.toggle('active');
-        navMenu.classList.toggle('active');
-    });
+    // Gestion des touches
+    document.addEventListener('keydown', handleKeyPress);
+});
 
-    // Close mobile menu when clicking on a link
-    document.querySelectorAll('.nav-link').forEach(link => {
-        link.addEventListener('click', () => {
-            mobileMenu.classList.remove('active');
-            navMenu.classList.remove('active');
-        });
-    });
+// === GESTION DU THÈME ===
+function initTheme() {
+    const savedTheme = localStorage.getItem('portfolio-theme') || 'dark';
+    document.body.setAttribute('data-theme', savedTheme);
+    updateThemeButtons();
 
-    // Navbar scroll effect
-    const navbar = document.querySelector('.navbar');
-    let lastScrollTop = 0;
-
-    window.addEventListener('scroll', function() {
-        let scrollTop = window.pageYOffset || document.documentElement.scrollTop;
-
-        if (scrollTop > 100) {
-            navbar.classList.add('scrolled');
-        } else {
-            navbar.classList.remove('scrolled');
+    // Event listeners pour les boutons de thème
+    const themeButtons = ['theme-toggle', 'theme-toggle-nav'];
+    themeButtons.forEach(id => {
+        const btn = document.getElementById(id);
+        if (btn) {
+            btn.addEventListener('click', toggleTheme);
         }
-
-        lastScrollTop = scrollTop;
     });
+}
 
-    // Smooth scrolling for navigation links
-    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
-        anchor.addEventListener('click', function (e) {
+function toggleTheme() {
+    const currentTheme = document.body.getAttribute('data-theme');
+    const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+
+    document.body.setAttribute('data-theme', newTheme);
+    localStorage.setItem('portfolio-theme', newTheme);
+    updateThemeButtons();
+
+    // Notification
+    showNotification(`Mode ${newTheme === 'dark' ? 'sombre' : 'clair'} activé`);
+}
+
+function updateThemeButtons() {
+    const theme = document.body.getAttribute('data-theme');
+    const isLight = theme === 'light';
+
+    const buttons = [
+        document.getElementById('theme-toggle'),
+        document.getElementById('theme-toggle-nav')
+    ];
+
+    buttons.forEach(btn => {
+        if (btn) {
+            const icon = btn.querySelector('i');
+            const span = btn.querySelector('span');
+
+            if (icon) {
+                icon.className = isLight ? 'fas fa-moon' : 'fas fa-sun';
+            }
+            if (span) {
+                span.textContent = isLight ? 'Dark' : 'Light';
+            }
+        }
+    });
+}
+
+// === NAVIGATION ===
+function initNavigation() {
+    const navToggle = document.getElementById('nav-toggle');
+    const navLinks = document.querySelector('.nav-links');
+    const navLinkItems = document.querySelectorAll('.nav-link');
+
+    // Toggle mobile menu
+    if (navToggle) {
+        navToggle.addEventListener('click', () => {
+            navToggle.classList.toggle('active');
+            navLinks.classList.toggle('active');
+        });
+    }
+
+    // Close mobile menu on link click
+    navLinkItems.forEach(link => {
+        link.addEventListener('click', (e) => {
             e.preventDefault();
-            const target = document.querySelector(this.getAttribute('href'));
-            if (target) {
+
+            // Close mobile menu
+            if (navToggle) navToggle.classList.remove('active');
+            if (navLinks) navLinks.classList.remove('active');
+
+            // Smooth scroll
+            const targetId = link.getAttribute('href');
+            const targetSection = document.querySelector(targetId);
+            if (targetSection) {
                 const headerOffset = 80;
-                const elementPosition = target.getBoundingClientRect().top;
+                const elementPosition = targetSection.getBoundingClientRect().top;
                 const offsetPosition = elementPosition + window.pageYOffset - headerOffset;
 
                 window.scrollTo({
@@ -51,670 +143,840 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     });
 
-    // Intersection Observer for animations
+    // Active link highlighting
+    window.addEventListener('scroll', updateActiveNav);
+}
+
+function updateActiveNav() {
+    const sections = document.querySelectorAll('.section');
+    const navLinks = document.querySelectorAll('.nav-link');
+
+    let current = '';
+    sections.forEach(section => {
+        const sectionTop = section.getBoundingClientRect().top;
+        if (sectionTop <= 100) {
+            current = section.getAttribute('id');
+        }
+    });
+
+    navLinks.forEach(link => {
+        link.classList.remove('active');
+        if (link.getAttribute('href') === '#' + current) {
+            link.classList.add('active');
+        }
+    });
+}
+
+// === LECTEUR AUDIO ENTRANCE ===
+function initEntranceAudioPlayer() {
+    const entrancePlayPauseBtn = document.getElementById('entrance-play-pause-btn');
+    const entrancePrevBtn = document.getElementById('entrance-prev-btn');
+    const entranceNextBtn = document.getElementById('entrance-next-btn');
+    const entranceProgressBar = document.getElementById('entrance-progress-bar');
+
+    // Event listeners pour entrance
+    if (entrancePlayPauseBtn) {
+        entrancePlayPauseBtn.addEventListener('click', togglePlayPause);
+    }
+
+    if (entrancePrevBtn) {
+        entrancePrevBtn.addEventListener('click', previousTrack);
+    }
+
+    if (entranceNextBtn) {
+        entranceNextBtn.addEventListener('click', nextTrack);
+    }
+
+    if (entranceProgressBar) {
+        entranceProgressBar.addEventListener('click', seekToEntrance);
+    }
+
+    // Initialiser l'affichage avec la bonne piste
+    updateEntrancePlayerDisplay();
+}
+
+function updateEntrancePlayerDisplay() {
+    const entranceTrackTitle = document.getElementById('entrance-track-title');
+    const track = musicTracks[currentTrackIndex];
+
+    if (entranceTrackTitle && track) {
+        entranceTrackTitle.textContent = track.title;
+    }
+}
+
+function updateEntranceProgress() {
+    const bgMusic = document.getElementById('bgMusic');
+    const entranceProgressFill = document.getElementById('entrance-progress-fill');
+    const entranceTimeCurrent = document.getElementById('entrance-time-current');
+    const entranceTimeTotal = document.getElementById('entrance-time-total');
+
+    if (bgMusic && entranceProgressFill && entranceTimeCurrent && !isNaN(bgMusic.duration)) {
+        const progress = (bgMusic.currentTime / bgMusic.duration) * 100;
+        entranceProgressFill.style.width = progress + '%';
+        entranceTimeCurrent.textContent = formatTime(bgMusic.currentTime);
+
+        if (entranceTimeTotal && bgMusic.duration) {
+            entranceTimeTotal.textContent = formatTime(bgMusic.duration);
+        }
+    }
+}
+
+function seekToEntrance(e) {
+    const bgMusic = document.getElementById('bgMusic');
+    const entranceProgressBar = document.getElementById('entrance-progress-bar');
+
+    if (bgMusic && entranceProgressBar && !isNaN(bgMusic.duration)) {
+        const rect = entranceProgressBar.getBoundingClientRect();
+        const clickX = e.clientX - rect.left;
+        const percentage = clickX / rect.width;
+        const newTime = percentage * bgMusic.duration;
+
+        bgMusic.currentTime = newTime;
+    }
+}
+
+function updateAllPlayButtons() {
+    const playPauseBtn = document.getElementById('play-pause-btn');
+    const entrancePlayPauseBtn = document.getElementById('entrance-play-pause-btn');
+
+    const icon = isPlaying ? '<i class="fas fa-pause"></i>' : '<i class="fas fa-play"></i>';
+    const className = isPlaying ? 'playing' : '';
+
+    if (playPauseBtn) {
+        playPauseBtn.innerHTML = icon;
+        playPauseBtn.className = playPauseBtn.className.replace('playing', '') + ' ' + className;
+    }
+
+    if (entrancePlayPauseBtn) {
+        entrancePlayPauseBtn.innerHTML = icon;
+        entrancePlayPauseBtn.className = entrancePlayPauseBtn.className.replace('playing', '') + ' ' + className;
+    }
+}
+function initAudioPlayer() {
+    const audioPlayer = document.getElementById('audio-player');
+    const bgMusic = document.getElementById('bgMusic');
+    const playPauseBtn = document.getElementById('play-pause-btn');
+    const prevBtn = document.getElementById('prev-btn');
+    const nextBtn = document.getElementById('next-btn');
+    const progressBar = document.getElementById('progress-bar');
+    const progressFill = document.getElementById('progress-fill');
+    const progressHandle = document.getElementById('progress-handle');
+    const timeCurrent = document.getElementById('time-current');
+    const timeTotal = document.getElementById('time-total');
+    const trackTitle = document.getElementById('player-track-title');
+
+    // Afficher le lecteur avec animation
+    if (audioPlayer) {
+        audioPlayer.classList.add('show');
+    }
+
+    // Event listeners
+    if (playPauseBtn) {
+        playPauseBtn.addEventListener('click', togglePlayPause);
+    }
+
+    if (prevBtn) {
+        prevBtn.addEventListener('click', previousTrack);
+    }
+
+    if (nextBtn) {
+        nextBtn.addEventListener('click', nextTrack);
+    }
+
+    if (progressBar) {
+        progressBar.addEventListener('click', seekTo);
+    }
+
+    // Mise à jour du temps et de la barre de progression
+    if (bgMusic) {
+        bgMusic.addEventListener('loadedmetadata', updateDuration);
+        bgMusic.addEventListener('timeupdate', updateProgress);
+        bgMusic.addEventListener('ended', nextTrack);
+    }
+
+    // Initialiser l'affichage avec la bonne piste
+    updatePlayerDisplay();
+}
+
+function togglePlayPause() {
+    const bgMusic = document.getElementById('bgMusic');
+
+    if (!bgMusic) return;
+
+    if (isPlaying) {
+        bgMusic.pause();
+        isPlaying = false;
+    } else {
+        // Charger la piste actuelle si nécessaire
+        const track = musicTracks[currentTrackIndex];
+        if (bgMusic.src !== window.location.origin + '/' + track.url) {
+            bgMusic.src = track.url;
+        }
+
+        bgMusic.play().then(() => {
+            isPlaying = true;
+            showNotification(`🎵 ${track.title}`);
+        }).catch(e => {
+            console.error('Erreur lecture audio:', e);
+            showNotification(`❌ Impossible de lire: ${track.title}`);
+        });
+    }
+
+    // Mettre à jour tous les boutons
+    updateAllPlayButtons();
+}
+
+function previousTrack() {
+    currentTrackIndex = currentTrackIndex === 0 ? musicTracks.length - 1 : currentTrackIndex - 1;
+    debugTrackChange(); // Debug
+    loadAndPlayTrack();
+}
+
+function nextTrack() {
+    currentTrackIndex = (currentTrackIndex + 1) % musicTracks.length;
+    debugTrackChange(); // Debug
+    loadAndPlayTrack();
+}
+
+function loadAndPlayTrack() {
+    const bgMusic = document.getElementById('bgMusic');
+    const track = musicTracks[currentTrackIndex];
+
+    console.log('🎵 loadAndPlayTrack called for:', track?.title);
+
+    if (bgMusic && track) {
+        bgMusic.src = track.url;
+
+        // Forcer la mise à jour immédiate des deux lecteurs
+        setTimeout(() => {
+            updatePlayerDisplay();
+            updateEntrancePlayerDisplay();
+        }, 10);
+
+        if (isPlaying) {
+            bgMusic.play().then(() => {
+                showNotification(`🎵 ${track.title}`);
+            }).catch(e => {
+                console.error('Erreur lecture audio:', e);
+                showNotification(`❌ Impossible de lire: ${track.title}`);
+            });
+        }
+
+        updateAllPlayButtons();
+    }
+}
+
+function updatePlayerDisplay() {
+    const trackTitle = document.getElementById('player-track-title');
+    const track = musicTracks[currentTrackIndex];
+
+    if (trackTitle && track) {
+        trackTitle.textContent = track.title;
+    }
+}
+
+function updateDuration() {
+    const bgMusic = document.getElementById('bgMusic');
+    const timeTotal = document.getElementById('time-total');
+
+    if (bgMusic && timeTotal && !isNaN(bgMusic.duration)) {
+        timeTotal.textContent = formatTime(bgMusic.duration);
+    }
+}
+
+function updateProgress() {
+    const bgMusic = document.getElementById('bgMusic');
+    const progressFill = document.getElementById('progress-fill');
+    const timeCurrent = document.getElementById('time-current');
+
+    if (bgMusic && progressFill && timeCurrent && !isNaN(bgMusic.duration)) {
+        const progress = (bgMusic.currentTime / bgMusic.duration) * 100;
+        progressFill.style.width = progress + '%';
+        timeCurrent.textContent = formatTime(bgMusic.currentTime);
+    }
+
+    // Synchroniser avec le lecteur entrance
+    updateEntranceProgress();
+}
+
+function seekTo(e) {
+    const bgMusic = document.getElementById('bgMusic');
+    const progressBar = document.getElementById('progress-bar');
+
+    if (bgMusic && progressBar && !isNaN(bgMusic.duration)) {
+        const rect = progressBar.getBoundingClientRect();
+        const clickX = e.clientX - rect.left;
+        const percentage = clickX / rect.width;
+        const newTime = percentage * bgMusic.duration;
+
+        bgMusic.currentTime = newTime;
+    }
+}
+
+function formatTime(seconds) {
+    if (isNaN(seconds)) return '0:00';
+
+    const mins = Math.floor(seconds / 60);
+    const secs = Math.floor(seconds % 60);
+    return `${mins}:${secs.toString().padStart(2, '0')}`;
+}
+
+function toggleMusic() {
+    const musicToggle = document.getElementById('music-toggle');
+
+    if (!isPlaying) {
+        playCurrentTrack();
+        isPlaying = true;
+        if (musicToggle) {
+            musicToggle.classList.add('active');
+            const icon = musicToggle.querySelector('i');
+            if (icon) icon.className = 'fas fa-pause';
+        }
+    } else {
+        stopMusic();
+        isPlaying = false;
+        if (musicToggle) {
+            musicToggle.classList.remove('active');
+            const icon = musicToggle.querySelector('i');
+            if (icon) icon.className = 'fas fa-music';
+        }
+    }
+}
+
+function playCurrentTrack() {
+    const bgMusic = document.getElementById('bgMusic');
+    const track = musicTracks[currentTrackIndex];
+
+    if (bgMusic && track) {
+        // Arrêter la musique précédente
+        bgMusic.pause();
+        bgMusic.currentTime = 0;
+
+        // Charger et jouer le nouveau fichier
+        bgMusic.src = track.url;
+        bgMusic.volume = 0.5; // Volume normal pour la vraie musique
+        bgMusic.loop = true; // Répéter la musique
+
+        // Essayer de jouer le fichier audio
+        bgMusic.play().then(() => {
+            console.log(`🎵 Lecture de: ${track.title}`);
+            showNotification(`🎵 ${track.title}`);
+        }).catch(e => {
+            console.error('Erreur lecture audio:', e);
+            showNotification(`❌ Impossible de lire: ${track.title}. Vérifiez que le fichier existe.`);
+
+            // Si le fichier n'existe pas, on peut optionnellement revenir au générateur
+            // playGeneratedTone();
+        });
+    }
+}
+
+function playGeneratedTone() {
+    // Créer une ambiance douce et agréable
+    if (!audioContext) {
+        audioContext = new (window.AudioContext || window.webkitAudioContext)();
+    }
+
+    if (currentAudio) {
+        stopCurrentAudio();
+    }
+
+    const oscillators = [];
+    const gainNodes = [];
+
+    // Notes simples et harmonieuses selon la piste
+    const frequencies = currentTrackIndex === 0
+        ? [220, 277.18, 329.63]    // A4, C#5, E5 - Accord de La majeur
+        : [196, 246.94, 293.66];   // G4, B4, D5 - Accord de Sol majeur
+
+    frequencies.forEach((freq, index) => {
+        const oscillator = audioContext.createOscillator();
+        const gainNode = audioContext.createGain();
+        const filterNode = audioContext.createBiquadFilter();
+
+        // Connexions simples
+        oscillator.connect(filterNode);
+        filterNode.connect(gainNode);
+        gainNode.connect(audioContext.destination);
+
+        // Configuration douce
+        oscillator.frequency.setValueAtTime(freq, audioContext.currentTime);
+        oscillator.type = 'sine'; // Seulement des sinus, plus doux
+
+        // Filtre passe-bas doux
+        filterNode.type = 'lowpass';
+        filterNode.frequency.setValueAtTime(800, audioContext.currentTime);
+        filterNode.Q.setValueAtTime(0.5, audioContext.currentTime);
+
+        // Volume très bas et progressif
+        const maxVolume = 0.008; // Volume très réduit
+        gainNode.gain.setValueAtTime(0, audioContext.currentTime);
+        gainNode.gain.linearRampToValueAtTime(maxVolume, audioContext.currentTime + 3);
+
+        oscillator.start(audioContext.currentTime);
+
+        oscillators.push(oscillator);
+        gainNodes.push(gainNode);
+    });
+
+    currentAudio = { oscillators, gainNodes };
+
+    // Variations très subtiles et lentes
+    const variationInterval = setInterval(() => {
+        if (!isPlaying || !currentAudio) {
+            clearInterval(variationInterval);
+            return;
+        }
+
+        oscillators.forEach((osc, index) => {
+            try {
+                const baseFreq = frequencies[index];
+                // Variation très subtile (±1%)
+                const variation = baseFreq * (1 + (Math.random() - 0.5) * 0.02);
+                osc.frequency.exponentialRampToValueAtTime(
+                    variation,
+                    audioContext.currentTime + 2
+                );
+            } catch (e) {
+                clearInterval(variationInterval);
+            }
+        });
+
+    }, 5000); // Variations toutes les 5 secondes seulement
+
+    currentAudio.variationInterval = variationInterval;
+}
+
+function stopCurrentAudio() {
+    if (currentAudio) {
+        // Fade out doux avant l'arrêt
+        if (currentAudio.gainNodes) {
+            currentAudio.gainNodes.forEach(gain => {
+                try {
+                    gain.gain.exponentialRampToValueAtTime(0.0001, audioContext.currentTime + 1);
+                } catch (e) {
+                    // Gain déjà déconnecté
+                }
+            });
+        }
+
+        // Arrêter les oscillateurs après le fade
+        setTimeout(() => {
+            if (currentAudio && currentAudio.oscillators) {
+                currentAudio.oscillators.forEach(osc => {
+                    try {
+                        osc.stop();
+                    } catch (e) {
+                        // Oscillateur déjà arrêté
+                    }
+                });
+            }
+        }, 1000);
+
+        // Arrêter les intervalles
+        if (currentAudio.variationInterval) {
+            clearInterval(currentAudio.variationInterval);
+        }
+    }
+}
+
+function stopMusic() {
+    const bgMusic = document.getElementById('bgMusic');
+
+    if (bgMusic) {
+        bgMusic.pause();
+        bgMusic.currentTime = 0;
+    }
+
+    // Arrêter aussi les sons générés si ils sont encore actifs
+    stopCurrentAudio();
+    currentAudio = null;
+}
+
+function nextTrack() {
+    currentTrackIndex = (currentTrackIndex + 1) % musicTracks.length;
+    updateTrackDisplay();
+
+    if (isPlaying) {
+        stopMusic();
+        setTimeout(() => {
+            // Reprendre la lecture automatiquement
+            isPlaying = true;
+            playCurrentTrack();
+        }, 300);
+    }
+}
+
+function updateTrackDisplay() {
+    const trackDisplay = document.getElementById('current-track');
+    if (trackDisplay) {
+        trackDisplay.textContent = musicTracks[currentTrackIndex].title;
+    }
+}
+
+// === PARTICULES ===
+function initParticles() {
+    const container = document.getElementById('particles');
+    if (!container) return;
+
+    setInterval(() => {
+        if (document.getElementById('entrance').classList.contains('fade-out')) return;
+
+        const particle = document.createElement('div');
+        particle.className = 'particle';
+        particle.style.left = Math.random() * 100 + '%';
+        particle.style.animationDuration = (Math.random() * 3 + 3) + 's';
+        particle.style.animationDelay = Math.random() * 2 + 's';
+
+        container.appendChild(particle);
+
+        setTimeout(() => {
+            if (particle.parentNode) {
+                particle.parentNode.removeChild(particle);
+            }
+        }, 6000);
+    }, 300);
+}
+
+// === EFFET DE FRAPPE ===
+function initTypingEffect() {
+    const typingElement = document.querySelector('.typing-text');
+    if (!typingElement) return;
+
+    const text = typingElement.textContent;
+    typingElement.textContent = '';
+
+    let i = 0;
+    function typeWriter() {
+        if (i < text.length) {
+            typingElement.textContent += text.charAt(i);
+            i++;
+            setTimeout(typeWriter, 50);
+        }
+    }
+
+    setTimeout(typeWriter, 1000);
+}
+
+// === ANIMATIONS AU SCROLL ===
+function initScrollAnimations() {
     const observerOptions = {
         threshold: 0.1,
         rootMargin: '0px 0px -50px 0px'
     };
 
-    const observer = new IntersectionObserver(function(entries) {
+    const observer = new IntersectionObserver((entries) => {
         entries.forEach(entry => {
             if (entry.isIntersecting) {
-                entry.target.classList.add('animate');
-
-                // Special animation for skill bars
-                if (entry.target.classList.contains('skills')) {
-                    animateSkillBars();
-                }
+                entry.target.classList.add('fade-in-up');
             }
         });
     }, observerOptions);
 
-    // Observe elements for animation
-    const animateElements = document.querySelectorAll('.about-card, .skill-item, .project-card, .skills');
-    animateElements.forEach(el => {
-        el.classList.add('animate-on-scroll');
-        observer.observe(el);
+    // Observer les cartes
+    document.querySelectorAll('.about-card, .project-card').forEach(card => {
+        observer.observe(card);
     });
+}
 
-    // Skill bars animation
-    function animateSkillBars() {
-        const skillBars = document.querySelectorAll('.skill-bar');
+// === ENTRÉE DANS LE SITE ===
+function enterSite() {
+    const entrance = document.getElementById('entrance');
+    const mainSite = document.getElementById('main-site');
 
-        skillBars.forEach(bar => {
-            const level = bar.getAttribute('data-level');
-            setTimeout(() => {
-                bar.style.setProperty('--skill-width', level + '%');
-                bar.classList.add('animate');
-            }, 200);
-        });
-    }
+    entrance.classList.add('fade-out');
 
-    // Contact form handling with Formspree
-    const contactForm = document.getElementById('contact-form');
+    setTimeout(() => {
+        entrance.style.display = 'none';
+        mainSite.classList.remove('hidden');
 
-    if (contactForm) {
-        contactForm.addEventListener('submit', function(e) {
-            e.preventDefault();
+        // Animer l'entrée du contenu principal
+        initMainSiteAnimations();
 
-            // Get form data
-            const formData = new FormData(contactForm);
-            const name = formData.get('name');
-            const email = formData.get('email');
-            const message = formData.get('message');
+        // La musique continue de jouer automatiquement sur le lecteur principal
+    }, 1000);
+}
 
-            // Simple validation
-            if (!name || !email || !message) {
-                showNotification('Veuillez remplir tous les champs.', 'error');
-                return;
-            }
+function initMainSiteAnimations() {
+    // Animation du terminal
+    const terminalLines = document.querySelectorAll('.terminal-line, .skill-item');
 
-            if (!isValidEmail(email)) {
-                showNotification('Veuillez entrer une adresse email valide.', 'error');
-                return;
-            }
+    terminalLines.forEach((line, index) => {
+        line.style.opacity = '0';
+        line.style.transform = 'translateX(-20px)';
 
-            // Show loading state
-            showLoadingState();
-
-            // Submit to Formspree
-            fetch(contactForm.action, {
-                method: 'POST',
-                body: formData,
-                headers: {
-                    'Accept': 'application/json'
-                }
-            }).then(response => {
-                hideLoadingState();
-                if (response.ok) {
-                    showNotification('Message envoyé avec succès ! Je vous répondrai bientôt.', 'success');
-                    contactForm.reset();
-                } else {
-                    // Handle different types of errors
-                    if (response.status === 422) {
-                        showNotification('Erreur de validation des données. Vérifiez vos informations.', 'error');
-                    } else if (response.status === 429) {
-                        showNotification('Trop de tentatives. Veuillez attendre avant de renvoyer.', 'error');
-                    } else {
-                        showNotification('Erreur lors de l\'envoi. Vous pouvez me contacter directement par email.', 'error');
-                    }
-                    console.error('Form submission error:', response.status, response.statusText);
-                }
-            }).catch(error => {
-                hideLoadingState();
-                console.error('Network error:', error);
-
-                // Fallback: provide alternative contact methods
-                showNotification('Problème de connexion. Vous pouvez me contacter directement à jimmyramsamynaick@gmail.com', 'error');
-            });
-        });
-    }
-
-    // Email validation function
-    function isValidEmail(email) {
-        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-        return emailRegex.test(email);
-    }
-
-    // Show loading state on form submission
-    function showLoadingState() {
-        const submitBtn = contactForm.querySelector('button[type="submit"]');
-        submitBtn.disabled = true;
-        submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Envoi en cours...';
-    }
-
-    // Hide loading state
-    function hideLoadingState() {
-        const submitBtn = contactForm.querySelector('button[type="submit"]');
-        submitBtn.disabled = false;
-        submitBtn.innerHTML = 'Envoyer le message';
-    }
-
-    // Notification system
-    function showNotification(message, type = 'info') {
-        // Remove existing notification
-        const existingNotification = document.querySelector('.notification');
-        if (existingNotification) {
-            existingNotification.remove();
-        }
-
-        // Create notification element
-        const notification = document.createElement('div');
-        notification.className = `notification notification-${type}`;
-        notification.innerHTML = `
-            <div class="notification-content">
-                <i class="fas fa-${getNotificationIcon(type)}"></i>
-                <span>${message}</span>
-                <button class="notification-close">
-                    <i class="fas fa-times"></i>
-                </button>
-            </div>
-        `;
-
-        // Add styles if not already added
-        if (!document.querySelector('#notification-styles')) {
-            const styles = document.createElement('style');
-            styles.id = 'notification-styles';
-            styles.textContent = `
-                .notification {
-                    position: fixed;
-                    top: 20px;
-                    right: 20px;
-                    z-index: 10000;
-                    max-width: 400px;
-                    border-radius: 8px;
-                    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-                    transform: translateX(100%);
-                    transition: transform 0.3s ease;
-                }
-                
-                .notification.show {
-                    transform: translateX(0);
-                }
-                
-                .notification-success {
-                    background: #10b981;
-                    color: white;
-                }
-                
-                .notification-error {
-                    background: #ef4444;
-                    color: white;
-                }
-                
-                .notification-info {
-                    background: #3b82f6;
-                    color: white;
-                }
-                
-                .notification-content {
-                    padding: 1rem;
-                    display: flex;
-                    align-items: center;
-                    gap: 0.5rem;
-                }
-                
-                .notification-close {
-                    background: none;
-                    border: none;
-                    color: white;
-                    cursor: pointer;
-                    margin-left: auto;
-                    padding: 0.25rem;
-                    border-radius: 4px;
-                    transition: background 0.2s ease;
-                }
-                
-                .notification-close:hover {
-                    background: rgba(255, 255, 255, 0.2);
-                }
-            `;
-            document.head.appendChild(styles);
-        }
-
-        // Add to document
-        document.body.appendChild(notification);
-
-        // Show notification
         setTimeout(() => {
-            notification.classList.add('show');
-        }, 100);
+            line.style.transition = 'all 0.5s ease';
+            line.style.opacity = '1';
+            line.style.transform = 'translateX(0)';
+        }, index * 200);
+    });
+}
 
-        // Auto remove after 5 seconds
-        const autoRemove = setTimeout(() => {
-            removeNotification(notification);
-        }, 5000);
-
-        // Close button functionality
-        const closeBtn = notification.querySelector('.notification-close');
-        closeBtn.addEventListener('click', () => {
-            clearTimeout(autoRemove);
-            removeNotification(notification);
-        });
+// === GESTION DES TOUCHES ===
+function handleKeyPress(e) {
+    // Éviter les actions si on tape dans un input
+    if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') {
+        return;
     }
 
-    // Get notification icon based on type
-    function getNotificationIcon(type) {
-        const icons = {
-            success: 'check-circle',
-            error: 'exclamation-triangle',
-            info: 'info-circle'
-        };
-        return icons[type] || 'info-circle';
+    switch (e.key.toLowerCase()) {
+        case ' ': // Espace pour play/pause
+            e.preventDefault();
+            togglePlayPause();
+            break;
+        case 'm':
+            togglePlayPause();
+            break;
+        case 't':
+            toggleTheme();
+            break;
+        case 'n':
+        case 'arrowright':
+            nextTrack();
+            break;
+        case 'p':
+        case 'arrowleft':
+            previousTrack();
+            break;
+        case 'escape':
+            // Fermer le menu mobile si ouvert
+            const navToggle = document.getElementById('nav-toggle');
+            const navLinks = document.querySelector('.nav-links');
+            if (navToggle && navToggle.classList.contains('active')) {
+                navToggle.classList.remove('active');
+                navLinks.classList.remove('active');
+            }
+            break;
+    }
+}
+
+// === NOTIFICATIONS ===
+function showNotification(message, duration = 3000) {
+    // Supprimer l'ancienne notification si elle existe
+    const existing = document.querySelector('.notification');
+    if (existing) {
+        existing.remove();
     }
 
-    // Remove notification
-    function removeNotification(notification) {
-        notification.classList.remove('show');
+    const notification = document.createElement('div');
+    notification.className = 'notification';
+    notification.textContent = message;
+
+    // Styles
+    notification.style.cssText = `
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        background: var(--bg-secondary);
+        color: var(--text-primary);
+        padding: 1rem 1.5rem;
+        border-radius: 8px;
+        border: 1px solid var(--accent-primary);
+        box-shadow: var(--shadow-glow);
+        z-index: 10001;
+        font-family: 'JetBrains Mono', monospace;
+        font-size: 0.9rem;
+        transform: translateX(100%);
+        transition: transform 0.3s ease;
+        backdrop-filter: blur(10px);
+    `;
+
+    document.body.appendChild(notification);
+
+    // Animation d'entrée
+    setTimeout(() => {
+        notification.style.transform = 'translateX(0)';
+    }, 100);
+
+    // Auto-suppression
+    setTimeout(() => {
+        notification.style.transform = 'translateX(100%)';
         setTimeout(() => {
             if (notification.parentNode) {
                 notification.parentNode.removeChild(notification);
             }
         }, 300);
+    }, duration);
+}
+
+// === EASTER EGGS ===
+let konamiCode = [];
+const konamiSequence = ['ArrowUp', 'ArrowUp', 'ArrowDown', 'ArrowDown', 'ArrowLeft', 'ArrowRight', 'ArrowLeft', 'ArrowRight', 'KeyB', 'KeyA'];
+
+document.addEventListener('keydown', function(e) {
+    konamiCode.push(e.code);
+
+    if (konamiCode.length > konamiSequence.length) {
+        konamiCode.shift();
     }
 
-    // Typing effect for hero subtitle
-    function typeWriter(element, text, speed = 100) {
-        let i = 0;
-        element.innerHTML = '';
+    if (konamiCode.length === konamiSequence.length &&
+        konamiCode.every((key, index) => key === konamiSequence[index])) {
 
-        function type() {
-            if (i < text.length) {
-                element.innerHTML += text.charAt(i);
-                i++;
-                setTimeout(type, speed);
-            }
-        }
-
-        type();
-    }
-
-    // Initialize typing effect
-    const heroSubtitle = document.querySelector('.hero-subtitle');
-    if (heroSubtitle) {
-        const originalText = heroSubtitle.textContent;
-        setTimeout(() => {
-            typeWriter(heroSubtitle, originalText, 50);
-        }, 1000);
-    }
-
-    // Parallax effect for hero section (disabled to fix overlapping)
-    /*
-    window.addEventListener('scroll', function() {
-        const scrolled = window.pageYOffset;
-        const hero = document.querySelector('.hero');
-        if (hero) {
-            const speed = 0.5;
-            hero.style.transform = `translateY(${scrolled * speed}px)`;
-        }
-    });
-    */
-
-    // Dynamic project cards hover effect
-    const projectCards = document.querySelectorAll('.project-card:not(.coming-soon)');
-    projectCards.forEach(card => {
-        card.addEventListener('mouseenter', function() {
-            this.style.transform = 'translateY(-10px) scale(1.02)';
-        });
-
-        card.addEventListener('mouseleave', function() {
-            this.style.transform = 'translateY(0) scale(1)';
-        });
-    });
-
-    // Add click effect to buttons
-    document.querySelectorAll('.btn').forEach(btn => {
-        btn.addEventListener('click', function(e) {
-            // Create ripple effect
-            const ripple = document.createElement('span');
-            const rect = this.getBoundingClientRect();
-            const size = Math.max(rect.width, rect.height);
-            const x = e.clientX - rect.left - size / 2;
-            const y = e.clientY - rect.top - size / 2;
-
-            ripple.style.cssText = `
-                position: absolute;
-                border-radius: 50%;
-                background: rgba(255, 255, 255, 0.6);
-                transform: scale(0);
-                animation: ripple 0.6s linear;
-                width: ${size}px;
-                height: ${size}px;
-                left: ${x}px;
-                top: ${y}px;
-                pointer-events: none;
-            `;
-
-            // Add ripple animation if not exists
-            if (!document.querySelector('#ripple-styles')) {
-                const rippleStyles = document.createElement('style');
-                rippleStyles.id = 'ripple-styles';
-                rippleStyles.textContent = `
-                    @keyframes ripple {
-                        to {
-                            transform: scale(4);
-                            opacity: 0;
-                        }
-                    }
-                    .btn {
-                        position: relative;
-                        overflow: hidden;
-                    }
-                `;
-                document.head.appendChild(rippleStyles);
-            }
-
-            this.appendChild(ripple);
-
-            setTimeout(() => {
-                if (ripple.parentNode) {
-                    ripple.parentNode.removeChild(ripple);
-                }
-            }, 600);
-        });
-    });
-
-    // Lazy loading for images (if any images are added later)
-    if ('IntersectionObserver' in window) {
-        const imageObserver = new IntersectionObserver((entries, observer) => {
-            entries.forEach(entry => {
-                if (entry.isIntersecting) {
-                    const img = entry.target;
-                    img.src = img.dataset.src;
-                    img.classList.remove('lazy');
-                    imageObserver.unobserve(img);
-                }
-            });
-        });
-
-        document.querySelectorAll('img[data-src]').forEach(img => {
-            imageObserver.observe(img);
-        });
-    }
-
-    // Easter egg - Konami code
-    let konamiCode = [];
-    const konamiSequence = [38, 38, 40, 40, 37, 39, 37, 39, 66, 65]; // Up Up Down Down Left Right Left Right B A
-
-    document.addEventListener('keydown', function(e) {
-        konamiCode.push(e.keyCode);
-
-        if (konamiCode.length > konamiSequence.length) {
-            konamiCode.shift();
-        }
-
-        if (konamiCode.length === konamiSequence.length) {
-            let match = true;
-            for (let i = 0; i < konamiSequence.length; i++) {
-                if (konamiCode[i] !== konamiSequence[i]) {
-                    match = false;
-                    break;
-                }
-            }
-
-            if (match) {
-                showNotification('🎉 Code Konami activé ! Vous êtes un vrai gamer !', 'success');
-                // Add some fun effect
-                document.body.style.animation = 'rainbow 2s infinite';
-
-                // Add rainbow animation
-                if (!document.querySelector('#rainbow-styles')) {
-                    const rainbowStyles = document.createElement('style');
-                    rainbowStyles.id = 'rainbow-styles';
-                    rainbowStyles.textContent = `
-                        @keyframes rainbow {
-                            0% { filter: hue-rotate(0deg); }
-                            100% { filter: hue-rotate(360deg); }
-                        }
-                    `;
-                    document.head.appendChild(rainbowStyles);
-                }
-
-                setTimeout(() => {
-                    document.body.style.animation = '';
-                }, 2000);
-
-                konamiCode = [];
-            }
-        }
-    });
-
-    // Performance optimization - debounce scroll events
-    function debounce(func, wait) {
-        let timeout;
-        return function executedFunction(...args) {
-            const later = () => {
-                clearTimeout(timeout);
-                func(...args);
-            };
-            clearTimeout(timeout);
-            timeout = setTimeout(later, wait);
-        };
-    }
-
-    // Apply debounce to scroll events
-    const debouncedScroll = debounce(() => {
-        // Any heavy scroll operations can go here
-        console.log('Scroll optimized');
-    }, 10);
-
-    window.addEventListener('scroll', debouncedScroll);
-
-    // Add loading animation
-    window.addEventListener('load', function() {
-        document.body.classList.add('loaded');
-
-        // Add loaded styles if not exists
-        if (!document.querySelector('#loading-styles')) {
-            const loadingStyles = document.createElement('style');
-            loadingStyles.id = 'loading-styles';
-            loadingStyles.textContent = `
-                body:not(.loaded) {
-                    overflow: hidden;
-                }
-                
-                body:not(.loaded)::before {
-                    content: '';
-                    position: fixed;
-                    top: 0;
-                    left: 0;
-                    width: 100%;
-                    height: 100%;
-                    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-                    z-index: 10000;
-                    display: flex;
-                    align-items: center;
-                    justify-content: center;
-                }
-                
-                body:not(.loaded)::after {
-                    content: '';
-                    position: fixed;
-                    top: 50%;
-                    left: 50%;
-                    width: 50px;
-                    height: 50px;
-                    border: 3px solid rgba(255, 255, 255, 0.3);
-                    border-top: 3px solid white;
-                    border-radius: 50%;
-                    animation: spin 1s linear infinite;
-                    z-index: 10001;
-                    transform: translate(-50%, -50%);
-                }
-                
-                @keyframes spin {
-                    0% { transform: translate(-50%, -50%) rotate(0deg); }
-                    100% { transform: translate(-50%, -50%) rotate(360deg); }
-                }
-            `;
-            document.head.appendChild(loadingStyles);
-        }
-    });
-
-    // Dynamic content updates
-    function updateProjectStatus() {
-        const projects = [
-            { id: 'yako-bot', status: 'in-progress' },
-            { id: 'popeye', status: 'completed' },
-            { id: 'sokoban', status: 'needs-improvement' },
-            { id: 'printf', status: 'completed' },
-            { id: 'bash-project', status: 'completed' }
-        ];
-
-        projects.forEach(project => {
-            const element = document.querySelector(`[data-project="${project.id}"]`);
-            if (element) {
-                const statusBadge = element.querySelector('.status-badge');
-                if (statusBadge) {
-                    statusBadge.className = `status-badge ${project.status}`;
-                }
-            }
-        });
-    }
-
-    // Theme switcher (bonus feature)
-    function createThemeSwitcher() {
-        const themeSwitcher = document.createElement('button');
-        themeSwitcher.className = 'theme-switcher';
-        themeSwitcher.innerHTML = '<i class="fas fa-moon"></i>';
-        themeSwitcher.setAttribute('aria-label', 'Basculer le thème');
-        themeSwitcher.setAttribute('title', 'Basculer entre mode clair et sombre');
-
-        themeSwitcher.addEventListener('click', function() {
-            document.body.classList.toggle('dark-theme');
-            const isDark = document.body.classList.contains('dark-theme');
-            this.innerHTML = isDark ? '<i class="fas fa-sun"></i>' : '<i class="fas fa-moon"></i>';
-
-            // Save theme preference
-            try {
-                localStorage.setItem('theme', isDark ? 'dark' : 'light');
-            } catch (e) {
-                console.log('LocalStorage non disponible');
-            }
-        });
-
-        document.body.appendChild(themeSwitcher);
-
-        // Load saved theme
-        try {
-            const savedTheme = localStorage.getItem('theme');
-            if (savedTheme === 'dark') {
-                document.body.classList.add('dark-theme');
-                themeSwitcher.innerHTML = '<i class="fas fa-sun"></i>';
-            }
-        } catch (e) {
-            console.log('LocalStorage non disponible');
-        }
-    }
-
-    // Initialize theme switcher
-    createThemeSwitcher();
-
-    // Particle animation for hero background
-    function createParticles() {
-        const canvas = document.createElement('canvas');
-        const ctx = canvas.getContext('2d');
-        const hero = document.querySelector('.hero');
-
-        canvas.style.cssText = `
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            pointer-events: none;
-            z-index: 1;
-        `;
-
-        hero.style.position = 'relative';
-        hero.appendChild(canvas);
-
-        let particles = [];
-
-        function resizeCanvas() {
-            canvas.width = hero.offsetWidth;
-            canvas.height = hero.offsetHeight;
-        }
-
-        function Particle() {
-            this.x = Math.random() * canvas.width;
-            this.y = Math.random() * canvas.height;
-            this.vx = (Math.random() - 0.5) * 0.5;
-            this.vy = (Math.random() - 0.5) * 0.5;
-            this.size = Math.random() * 2 + 1;
-            this.opacity = Math.random() * 0.5 + 0.2;
-        }
-
-        Particle.prototype.update = function() {
-            this.x += this.vx;
-            this.y += this.vy;
-
-            if (this.x < 0 || this.x > canvas.width) this.vx *= -1;
-            if (this.y < 0 || this.y > canvas.height) this.vy *= -1;
-        };
-
-        Particle.prototype.draw = function() {
-            ctx.beginPath();
-            ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
-            ctx.fillStyle = `rgba(255, 255, 255, ${this.opacity})`;
-            ctx.fill();
-        };
-
-        function init() {
-            particles = [];
-            for (let i = 0; i < 50; i++) {
-                particles.push(new Particle());
-            }
-        }
-
-        function animate() {
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
-
-            particles.forEach(particle => {
-                particle.update();
-                particle.draw();
-            });
-
-            requestAnimationFrame(animate);
-        }
-
-        resizeCanvas();
-        init();
-        animate();
-
-        window.addEventListener('resize', resizeCanvas);
-    }
-
-    // Initialize particles
-    createParticles();
-
-    // Console message for developers
-    console.log(`
-    ╔══════════════════════════════════════════╗
-    ║           Jimmy Ramsamynaick             ║
-    ║    Développeur & Technicien Système     ║
-    ║                                          ║
-    ║  👋 Salut ! Curieux de voir le code ?   ║
-    ║  🚀 GitHub: JimmyRamsamynaick           ║
-    ║  💼 Expernet Campus - TSRS              ║
-    ║                                          ║
-    ║  Passionné par le développement et       ║
-    ║  l'administration système !              ║
-    ╚══════════════════════════════════════════╝
-    `);
-
-    // Performance monitoring
-    function logPerformance() {
-        if ('performance' in window && 'navigation' in performance) {
-            const timing = performance.timing;
-            const loadTime = timing.loadEventEnd - timing.navigationStart;
-            console.log(`⚡ Page loaded in ${loadTime}ms`);
-        }
-    }
-
-    // Initialize all components
-    setTimeout(() => {
-        updateProjectStatus();
-        logPerformance();
-        console.log('🎉 Portfolio Jimmy Ramsamynaick initialisé avec succès !');
-    }, 100);
-
-    // Error handling
-    window.addEventListener('error', function(e) {
-        console.error('Erreur JavaScript:', e.error);
-        showNotification('Une erreur s\'est produite. Veuillez actualiser la page.', 'error');
-    });
-
-    // Service Worker registration (for future PWA features)
-    if ('serviceWorker' in navigator) {
-        window.addEventListener('load', function() {
-            // navigator.serviceWorker.register('/sw.js')
-            //   .then(function(registration) {
-            //     console.log('SW registered: ', registration);
-            //   })
-            //   .catch(function(registrationError) {
-            //     console.log('SW registration failed: ', registrationError);
-            //   });
-        });
+        activateRainbowMode();
+        konamiCode = [];
     }
 });
+
+function activateRainbowMode() {
+    showNotification('🎮 Konami Code activé! Mode Arc-en-ciel!');
+
+    document.body.style.filter = 'hue-rotate(0deg)';
+    let degree = 0;
+
+    const rainbowInterval = setInterval(() => {
+        degree += 10;
+        document.body.style.filter = `hue-rotate(${degree}deg)`;
+
+        if (degree >= 360) {
+            clearInterval(rainbowInterval);
+            document.body.style.filter = '';
+        }
+    }, 50);
+}
+
+// === GESTION DES ERREURS ===
+window.addEventListener('error', function(e) {
+    console.error('Erreur JavaScript:', e.error);
+    showNotification('Une erreur est survenue. Vérifiez la console.', 5000);
+});
+
+// === FONCTIONS UTILITAIRES ===
+function debounce(func, wait) {
+    let timeout;
+    return function executedFunction(...args) {
+        const later = () => {
+            clearTimeout(timeout);
+            func(...args);
+        };
+        clearTimeout(timeout);
+        timeout = setTimeout(later, wait);
+    };
+}
+
+function throttle(func, limit) {
+    let inThrottle;
+    return function() {
+        const args = arguments;
+        const context = this;
+        if (!inThrottle) {
+            func.apply(context, args);
+            inThrottle = true;
+            setTimeout(() => inThrottle = false, limit);
+        }
+    };
+}
+
+// Optimisation du scroll avec throttle
+const optimizedScrollHandler = throttle(updateActiveNav, 100);
+window.addEventListener('scroll', optimizedScrollHandler);
+
+// === ACCESSIBILITÉ ===
+function initAccessibility() {
+    // Gestion du focus clavier
+    document.addEventListener('keydown', (e) => {
+        if (e.key === 'Tab') {
+            document.body.classList.add('keyboard-navigation');
+        }
+    });
+
+    document.addEventListener('mousedown', () => {
+        document.body.classList.remove('keyboard-navigation');
+    });
+
+    // Styles pour la navigation clavier
+    const style = document.createElement('style');
+    style.textContent = `
+        body:not(.keyboard-navigation) *:focus {
+            outline: none;
+        }
+        
+        .keyboard-navigation *:focus {
+            outline: 2px solid var(--accent-primary);
+            outline-offset: 2px;
+        }
+    `;
+    document.head.appendChild(style);
+}
+
+// Initialiser l'accessibilité
+document.addEventListener('DOMContentLoaded', initAccessibility);
+
+// === RESPONSIVE UTILITIES ===
+function isMobile() {
+    return window.innerWidth <= 768;
+}
+
+function isTablet() {
+    return window.innerWidth > 768 && window.innerWidth <= 1024;
+}
+
+function isDesktop() {
+    return window.innerWidth > 1024;
+}
+
+// Ajuster les animations selon la taille d'écran
+window.addEventListener('resize', debounce(() => {
+    if (isMobile()) {
+        // Désactiver certaines animations sur mobile pour les performances
+        document.body.classList.add('mobile-optimized');
+    } else {
+        document.body.classList.remove('mobile-optimized');
+    }
+}, 250));
+
+// === SAUVEGARDE D'ÉTAT ===
+function saveState() {
+    const state = {
+        theme: document.body.getAttribute('data-theme'),
+        currentTrack: currentTrackIndex,
+        musicPlaying: isPlaying
+    };
+    localStorage.setItem('portfolio-state', JSON.stringify(state));
+}
+
+function loadState() {
+    const saved = localStorage.getItem('portfolio-state');
+    if (saved) {
+        try {
+            const state = JSON.parse(saved);
+            if (state.theme) {
+                document.body.setAttribute('data-theme', state.theme);
+            }
+            if (state.currentTrack !== undefined) {
+                currentTrackIndex = state.currentTrack;
+            }
+            updateThemeButtons();
+            updateTrackDisplay();
+        } catch (e) {
+            console.log('Erreur lors du chargement de l\'état:', e);
+        }
+    }
+}
+
+// Sauvegarder l'état avant de quitter
+window.addEventListener('beforeunload', saveState);
+
+// Charger l'état au début
+document.addEventListener('DOMContentLoaded', loadState);
+
+// Message console pour les développeurs
+console.log(`
+╔══════════════════════════════════════════╗
+║           Jimmy Ramsamynaick             ║
+║    Développeur & Technicien Système     ║
+║                                          ║
+║  🎮 Raccourcis clavier:                 ║
+║  • ESPACE/M : Play/Pause musique         ║
+║  • ← P : Piste précédente                ║
+║  • → N : Piste suivante                  ║
+║  • T : Toggle thème                      ║
+║  • ESC : Fermer menu mobile              ║
+║  • Konami Code : Mode arc-en-ciel        ║
+║                                          ║
+║  🎵 Lecteur audio moderne style guns.lol ║
+║  🎨 Thème sombre/clair                   ║
+║  🚀 Construit avec amour à La Réunion    ║
+╚══════════════════════════════════════════╝
+`);

@@ -3,424 +3,403 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Jimmy Ramsamynaick - Portfolio</title>
+    <title>Jimmy Ramsamynaick - Dev & TSRS</title>
+    <meta name="description" content="Développeur & Technicien Système Réseau Sécurité basé à La Réunion">
     <link rel="stylesheet" href="css/style.css">
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 </head>
-<body>
-<!-- Navigation -->
-<nav class="navbar">
-    <div class="nav-container">
-        <div class="nav-logo">
-            <h2>Jimmy Ramsamynaick</h2>
-        </div>
-        <ul class="nav-menu">
-            <li class="nav-item">
-                <a href="#home" class="nav-link">Accueil</a>
-            </li>
-            <li class="nav-item">
-                <a href="#about" class="nav-link">À propos</a>
-            </li>
-            <li class="nav-item">
-                <a href="#skills" class="nav-link">Compétences</a>
-            </li>
-            <li class="nav-item">
-                <a href="#projects" class="nav-link">Projets</a>
-            </li>
-            <li class="nav-item">
-                <a href="#contact" class="nav-link">Contact</a>
-            </li>
-        </ul>
-        <div class="nav-toggle" id="mobile-menu">
-            <span class="bar"></span>
-            <span class="bar"></span>
-            <span class="bar"></span>
-        </div>
-    </div>
-</nav>
+<body data-theme="dark">
+<!-- Écran d'entrée avec Shīsā -->
+<div id="entrance" class="entrance-screen">
+    <div class="shisa-background"></div>
+    <div class="entrance-overlay"></div>
 
-<!-- Hero Section -->
-<section id="home" class="hero">
-    <div class="hero-content">
-        <div class="hero-text">
-            <h1 class="hero-title">Jimmy Ramsamynaick</h1>
-            <h2 class="hero-subtitle">Développeur & Technicien Système Réseau Sécurité</h2>
-            <p class="hero-description">
-                Ancien élève d'Epitech, actuellement chez Expernet Campus en TSRS.
-                Passionné d'informatique avec une expertise en développement et en infrastructure.
-            </p>
-            <div class="hero-buttons">
-                <a href="#projects" class="btn btn-primary">Voir mes projets</a>
-                <a href="#contact" class="btn btn-secondary">Me contacter</a>
-            </div>
+    <div class="entrance-content">
+        <div class="glitch-container">
+            <h1 class="glitch">JIMMY</h1>
+            <h2 class="glitch secondary">RAMSAMYNAICK</h2>
         </div>
-        <div class="hero-image">
-            <div class="profile-card">
-                <div class="profile-avatar">
-                    <i class="fas fa-user"></i>
+
+        <p class="entrance-subtitle">
+            <span class="typing-text">Développeur & Technicien Système Réseau Sécurité</span>
+        </p>
+
+        <button class="enter-btn" onclick="enterSite()">
+            <span>CLICK TO ENTER</span>
+            <i class="fas fa-arrow-right"></i>
+        </button>
+
+        <!-- Contrôles audio et thème -->
+        <div class="entrance-controls">
+            <!-- Lecteur audio entrance -->
+            <div class="entrance-audio-player">
+                <div class="entrance-player-icon">
+                    <i class="fas fa-music"></i>
                 </div>
-                <div class="profile-info">
-                    <h3>Jimmy</h3>
-                    <p>Tech Enthusiast</p>
+                <div class="entrance-player-info">
+                    <div class="entrance-track-title" id="entrance-track-title">Menace Santana - Vendredi 13 Mai 2022</div>
+                    <div class="entrance-player-controls">
+                        <span class="entrance-time" id="entrance-time-current">0:00</span>
+                        <div class="entrance-progress-container">
+                            <div class="entrance-progress-bar" id="entrance-progress-bar">
+                                <div class="entrance-progress-fill" id="entrance-progress-fill"></div>
+                            </div>
+                        </div>
+                        <span class="entrance-time" id="entrance-time-total">0:00</span>
+                    </div>
+                </div>
+                <div class="entrance-player-buttons">
+                    <button class="entrance-player-btn" id="entrance-prev-btn">
+                        <i class="fas fa-step-backward"></i>
+                    </button>
+                    <button class="entrance-player-btn entrance-play-pause-btn" id="entrance-play-pause-btn">
+                        <i class="fas fa-play"></i>
+                    </button>
+                    <button class="entrance-player-btn" id="entrance-next-btn">
+                        <i class="fas fa-step-forward"></i>
+                    </button>
                 </div>
             </div>
+
+            <button id="theme-toggle" class="control-btn">
+                <i class="fas fa-sun"></i>
+                <span>Light</span>
+            </button>
         </div>
     </div>
-</section>
 
-<!-- About Section -->
-<section id="about" class="about">
-    <div class="container">
-        <h2 class="section-title">À propos de moi</h2>
-        <div class="about-content">
-            <div class="about-text">
+    <div class="particles" id="particles"></div>
+</div>
+
+<!-- Site principal -->
+<div id="main-site" class="main-site hidden">
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <a href="#home" class="nav-brand">jimmy.dev</a>
+
+            <div class="nav-links">
+                <a href="#home" class="nav-link active">home</a>
+                <a href="#about" class="nav-link">about</a>
+                <a href="#projects" class="nav-link">projects</a>
+                <a href="#contact" class="nav-link">contact</a>
+            </div>
+
+            <button id="theme-toggle-nav" class="theme-btn">
+                <i class="fas fa-sun"></i>
+            </button>
+
+            <div class="nav-toggle" id="nav-toggle">
+                <span></span>
+                <span></span>
+                <span></span>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Section Home -->
+    <section id="home" class="section home-section">
+        <div class="container">
+            <div class="hero-content">
+                <div class="hero-text">
+                    <h1 class="hero-title">
+                        <span class="accent">></span> jimmy.dev
+                    </h1>
+                    <p class="hero-subtitle">Développeur & Technicien Système Réseau Sécurité</p>
+                    <p class="hero-location">📍 La Réunion, France</p>
+
+                    <div class="hero-links">
+                        <a href="mailto:jimmyramsamynaick@gmail.com" class="hero-link">
+                            <i class="fas fa-envelope"></i>
+                            email
+                        </a>
+                        <a href="https://github.com/JimmyRamsamynaick" class="hero-link" target="_blank">
+                            <i class="fab fa-github"></i>
+                            github
+                        </a>
+                        <a href="https://linkedin.com/in/jimmyramsamynaick" class="hero-link" target="_blank">
+                            <i class="fab fa-linkedin"></i>
+                            linkedin
+                        </a>
+                    </div>
+                </div>
+
+                <div class="hero-terminal">
+                    <div class="terminal">
+                        <div class="terminal-header">
+                            <div class="terminal-buttons">
+                                <span class="btn-close"></span>
+                                <span class="btn-minimize"></span>
+                                <span class="btn-maximize"></span>
+                            </div>
+                            <span class="terminal-title">jimmy@dev:~$</span>
+                        </div>
+                        <div class="terminal-body">
+                            <div class="terminal-line">
+                                <span class="prompt">$</span>
+                                <span class="command">cat skills.txt</span>
+                            </div>
+                            <div class="terminal-output">
+                                <div class="skill-item">• C/C++ Development</div>
+                                <div class="skill-item">• Web Technologies (HTML5, CSS3, JS)</div>
+                                <div class="skill-item">• Linux System Administration</div>
+                                <div class="skill-item">• Docker & DevOps</div>
+                                <div class="skill-item">• Network Security</div>
+                                <div class="skill-item">• Bash Scripting</div>
+                            </div>
+                            <div class="terminal-line">
+                                <span class="prompt">$</span>
+                                <span class="cursor">_</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Section About -->
+    <section id="about" class="section about-section">
+        <div class="container">
+            <h2 class="section-title">
+                <span class="accent">></span> about
+            </h2>
+
+            <div class="about-grid">
                 <div class="about-card">
                     <div class="card-icon">
                         <i class="fas fa-graduation-cap"></i>
                     </div>
                     <h3>Formation</h3>
-                    <p>
-                        Diplômé d'un Bac STI2D SIN, j'ai poursuivi mes études à Epitech Technology
-                        avant de rejoindre Expernet Campus pour me spécialiser en TSRS (Technicien
-                        Système Réseau Sécurité).
-                    </p>
+                    <p>Diplômé d'un Bac STI2D SIN, j'ai poursuivi mes études à <strong>Epitech Technology</strong> avant de rejoindre <strong>Expernet Campus</strong> pour me spécialiser en TSRS.</p>
                 </div>
+
                 <div class="about-card">
                     <div class="card-icon">
                         <i class="fas fa-briefcase"></i>
                     </div>
-                    <h3>Expérience Professionnelle</h3>
-                    <p>
-                        Actuellement en poste chez Expernet Informatique, je développe mes
-                        compétences en administration système, sécurité réseau et DevOps,
-                        tout en maintenant une expertise en développement.
-                    </p>
+                    <h3>Expérience</h3>
+                    <p>Actuellement en poste chez <strong>Expernet Informatique</strong>, je développe mes compétences en administration système, sécurité réseau et DevOps.</p>
                 </div>
+
                 <div class="about-card">
                     <div class="card-icon">
                         <i class="fas fa-heart"></i>
                     </div>
                     <h3>Passion</h3>
-                    <p>
-                        Passionné par l'informatique dans sa globalité, j'aime explorer de
-                        nouvelles technologies, automatiser les processus et créer des
-                        solutions innovantes pour chaque défi technique.
-                    </p>
+                    <p>Passionné par l'informatique dans sa globalité, j'aime explorer de nouvelles technologies et créer des solutions innovantes.</p>
                 </div>
             </div>
         </div>
-    </div>
-</section>
+    </section>
 
-<!-- Skills Section -->
-<section id="skills" class="skills">
-    <div class="container">
-        <h2 class="section-title">Mes Compétences</h2>
-        <div class="skills-content">
-            <div class="skills-category">
-                <h3><i class="fas fa-code"></i> Développement</h3>
-                <div class="skills-grid">
-                    <div class="skill-item">
-                        <div class="skill-icon">
-                            <i class="fab fa-c"></i>
+    <!-- Section Projects -->
+    <section id="projects" class="section projects-section">
+        <div class="container">
+            <h2 class="section-title">
+                <span class="accent">></span> projects
+            </h2>
+
+            <div class="projects-grid">
+                <div class="project-card" data-status="in-progress">
+                    <div class="project-header">
+                        <div class="project-icon">
+                            <i class="fab fa-discord"></i>
                         </div>
-                        <h4>Langage C</h4>
-                        <p>Développement système et programmation bas niveau</p>
-                        <div class="skill-level">
-                            <div class="skill-bar" data-level="90"></div>
-                        </div>
-                    </div>
-                    <div class="skill-item">
-                        <div class="skill-icon">
-                            <i class="fab fa-html5"></i>
-                        </div>
-                        <h4>Technologies Web</h4>
-                        <p>HTML5, CSS3, JavaScript pour le développement front-end</p>
-                        <div class="skill-level">
-                            <div class="skill-bar" data-level="80"></div>
+                        <div class="project-status">
+                            <span class="status-dot"></span>
+                            <span class="status-text">en développement</span>
                         </div>
                     </div>
-                    <div class="skill-item">
-                        <div class="skill-icon">
-                            <i class="fab fa-git-alt"></i>
-                        </div>
-                        <h4>Contrôle de Version</h4>
-                        <p>Git, GitHub pour la gestion collaborative de projets</p>
-                        <div class="skill-level">
-                            <div class="skill-bar" data-level="85"></div>
-                        </div>
+                    <h3 class="project-title">Yako Bot Discord</h3>
+                    <p class="project-description">Bot administrateur pour Discord avec modération automatique et gestion des utilisateurs.</p>
+                    <div class="project-tech">
+                        <span class="tech-tag">JavaScript</span>
+                        <span class="tech-tag">Discord.js</span>
+                        <span class="tech-tag">Node.js</span>
                     </div>
+                    <a href="https://github.com/JimmyRamsamynaick" class="project-link" target="_blank">
+                        <i class="fab fa-github"></i>
+                        code
+                    </a>
                 </div>
-            </div>
 
-            <div class="skills-category">
-                <h3><i class="fas fa-server"></i> Administration Système</h3>
-                <div class="skills-grid">
-                    <div class="skill-item">
-                        <div class="skill-icon">
-                            <i class="fab fa-linux"></i>
-                        </div>
-                        <h4>Systèmes Linux</h4>
-                        <p>Administration, scripting Bash, gestion des services</p>
-                        <div class="skill-level">
-                            <div class="skill-bar" data-level="85"></div>
-                        </div>
-                    </div>
-                    <div class="skill-item">
-                        <div class="skill-icon">
-                            <i class="fas fa-network-wired"></i>
-                        </div>
-                        <h4>Réseaux</h4>
-                        <p>Configuration, monitoring, dépannage réseau</p>
-                        <div class="skill-level">
-                            <div class="skill-bar" data-level="80"></div>
-                        </div>
-                    </div>
-                    <div class="skill-item">
-                        <div class="skill-icon">
-                            <i class="fas fa-shield-alt"></i>
-                        </div>
-                        <h4>Sécurité</h4>
-                        <p>Sécurité système, audit SSH, tests sécuritaires</p>
-                        <div class="skill-level">
-                            <div class="skill-bar" data-level="75"></div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <div class="skills-category">
-                <h3><i class="fas fa-cogs"></i> DevOps & Automatisation</h3>
-                <div class="skills-grid">
-                    <div class="skill-item">
-                        <div class="skill-icon">
+                <div class="project-card" data-status="completed">
+                    <div class="project-header">
+                        <div class="project-icon">
                             <i class="fab fa-docker"></i>
                         </div>
-                        <h4>Docker</h4>
-                        <p>Containerisation, Docker Compose, gestion d'images</p>
-                        <div class="skill-level">
-                            <div class="skill-bar" data-level="80"></div>
+                        <div class="project-status">
+                            <span class="status-dot"></span>
+                            <span class="status-text">terminé</span>
                         </div>
                     </div>
-                    <div class="skill-item">
-                        <div class="skill-icon">
-                            <i class="fas fa-robot"></i>
+                    <h3 class="project-title">Popeye</h3>
+                    <p class="project-description">Projet de découverte Docker réalisé à Epitech, utilisant Dockerfiles et Docker Compose.</p>
+                    <div class="project-tech">
+                        <span class="tech-tag">Docker</span>
+                        <span class="tech-tag">Docker Compose</span>
+                        <span class="tech-tag">Linux</span>
+                    </div>
+                    <a href="https://github.com/JimmyRamsamynaick" class="project-link" target="_blank">
+                        <i class="fab fa-github"></i>
+                        code
+                    </a>
+                </div>
+
+                <div class="project-card" data-status="needs-improvement">
+                    <div class="project-header">
+                        <div class="project-icon">
+                            <i class="fas fa-gamepad"></i>
                         </div>
-                        <h4>Automatisation</h4>
-                        <p>Scripts de sauvegarde, monitoring, déploiement continu</p>
-                        <div class="skill-level">
-                            <div class="skill-bar" data-level="78"></div>
+                        <div class="project-status">
+                            <span class="status-dot"></span>
+                            <span class="status-text">à améliorer</span>
                         </div>
                     </div>
-                    <div class="skill-item">
-                        <div class="skill-icon">
+                    <h3 class="project-title">My_Sokoban</h3>
+                    <p class="project-description">Implémentation du jeu classique Sokoban en C avec gestion des déplacements.</p>
+                    <div class="project-tech">
+                        <span class="tech-tag">C</span>
+                        <span class="tech-tag">CSFML</span>
+                        <span class="tech-tag">Algorithmes</span>
+                    </div>
+                    <a href="https://github.com/JimmyRamsamynaick" class="project-link" target="_blank">
+                        <i class="fab fa-github"></i>
+                        code
+                    </a>
+                </div>
+
+                <div class="project-card" data-status="completed">
+                    <div class="project-header">
+                        <div class="project-icon">
+                            <i class="fas fa-print"></i>
+                        </div>
+                        <div class="project-status">
+                            <span class="status-dot"></span>
+                            <span class="status-text">terminé</span>
+                        </div>
+                    </div>
+                    <h3 class="project-title">My_printf</h3>
+                    <p class="project-description">Réimplémentation personnalisée de printf() en C, réalisée en binôme avec Clément.</p>
+                    <div class="project-tech">
+                        <span class="tech-tag">C</span>
+                        <span class="tech-tag">Pointeurs</span>
+                        <span class="tech-tag">Formatage</span>
+                    </div>
+                    <a href="https://github.com/JimmyRamsamynaick" class="project-link" target="_blank">
+                        <i class="fab fa-github"></i>
+                        code
+                    </a>
+                </div>
+
+                <div class="project-card" data-status="completed">
+                    <div class="project-header">
+                        <div class="project-icon">
                             <i class="fas fa-terminal"></i>
                         </div>
-                        <h4>Scripting Bash</h4>
-                        <p>Automatisation de tâches, outils d'administration</p>
-                        <div class="skill-level">
-                            <div class="skill-bar" data-level="85"></div>
+                        <div class="project-status">
+                            <span class="status-dot"></span>
+                            <span class="status-text">terminé</span>
                         </div>
                     </div>
-                </div>
-            </div>
-        </div>
-    </div>
-</section>
-
-<!-- Projects Section -->
-<section id="projects" class="projects">
-    <div class="container">
-        <h2 class="section-title">Mes Projets</h2>
-        <div class="projects-grid">
-            <div class="project-card">
-                <div class="project-icon">
-                    <i class="fab fa-discord"></i>
-                </div>
-                <h3>Yako Bot Discord</h3>
-                <p>Bot administrateur pour Discord avec modération automatique, suppression de messages inappropriés et gestion des utilisateurs.</p>
-                <div class="project-tech">
-                    <span class="tech-tag">JavaScript</span>
-                    <span class="tech-tag">Discord.js</span>
-                    <span class="tech-tag">Node.js</span>
-                </div>
-                <div class="project-status">
-                    <span class="status-badge in-progress">En développement</span>
-                </div>
-            </div>
-
-            <div class="project-card">
-                <div class="project-icon">
-                    <i class="fab fa-docker"></i>
-                </div>
-                <h3>Popeye</h3>
-                <p>Projet de découverte Docker réalisé à Epitech, utilisant Dockerfiles et Docker Compose pour la gestion de conteneurs.</p>
-                <div class="project-tech">
-                    <span class="tech-tag">Docker</span>
-                    <span class="tech-tag">Docker Compose</span>
-                    <span class="tech-tag">Linux</span>
-                </div>
-                <div class="project-status">
-                    <span class="status-badge completed">Terminé</span>
-                </div>
-            </div>
-
-            <div class="project-card">
-                <div class="project-icon">
-                    <i class="fas fa-gamepad"></i>
-                </div>
-                <h3>My_Sokoban</h3>
-                <p>Implémentation du jeu classique Sokoban en C avec gestion des déplacements et mécaniques de jeu.</p>
-                <div class="project-tech">
-                    <span class="tech-tag">C</span>
-                    <span class="tech-tag">CSFML</span>
-                    <span class="tech-tag">Algorithmes</span>
-                </div>
-                <div class="project-status">
-                    <span class="status-badge needs-improvement">À améliorer</span>
-                </div>
-            </div>
-
-            <div class="project-card">
-                <div class="project-icon">
-                    <i class="fas fa-print"></i>
-                </div>
-                <h3>My_printf</h3>
-                <p>Réimplémentation personnalisée de printf() en C, réalisée en binôme avec Clément. Gestion complète des formats et spécificateurs.</p>
-                <div class="project-tech">
-                    <span class="tech-tag">C</span>
-                    <span class="tech-tag">Pointeurs</span>
-                    <span class="tech-tag">Formatage</span>
-                </div>
-                <div class="project-status">
-                    <span class="status-badge completed">Terminé</span>
-                </div>
-            </div>
-
-            <div class="project-card">
-                <div class="project-icon">
-                    <i class="fas fa-terminal"></i>
-                </div>
-                <h3>Projet Bash</h3>
-                <p>Collection d'outils professionnels en Bash pour l'automatisation système, réalisée avec Alexandre et Sameer.</p>
-                <div class="project-tech">
-                    <span class="tech-tag">Bash</span>
-                    <span class="tech-tag">Linux</span>
-                    <span class="tech-tag">Administration</span>
-                    <span class="tech-tag">Cron</span>
-                </div>
-                <div class="project-status">
-                    <span class="status-badge completed">Terminé</span>
-                </div>
-            </div>
-
-            <div class="project-card coming-soon">
-                <div class="project-icon">
-                    <i class="fas fa-plus"></i>
-                </div>
-                <h3>Projets à venir</h3>
-                <p>De nouveaux projets passionnants en cours de développement, alliant développement et administration système.</p>
-                <div class="project-tech">
-                    <span class="tech-tag">En réflexion</span>
-                </div>
-            </div>
-        </div>
-    </div>
-</section>
-
-<!-- Contact Section -->
-<section id="contact" class="contact">
-    <div class="container">
-        <h2 class="section-title">Me Contacter</h2>
-        <div class="contact-content">
-            <div class="contact-info">
-                <h3>Discutons ensemble</h3>
-                <p>
-                    Que ce soit pour un projet de développement, une mission en administration système
-                    ou simplement pour échanger sur les nouvelles technologies, n'hésitez pas à me contacter !
-                </p>
-                <div class="contact-links">
-                    <a href="https://github.com/JimmyRamsamynaick" class="contact-link" target="_blank">
+                    <h3 class="project-title">Bash Tools</h3>
+                    <p class="project-description">Collection d'outils professionnels en Bash pour l'automatisation système.</p>
+                    <div class="project-tech">
+                        <span class="tech-tag">Bash</span>
+                        <span class="tech-tag">Linux</span>
+                        <span class="tech-tag">Cron</span>
+                    </div>
+                    <a href="https://github.com/JimmyRamsamynaick" class="project-link" target="_blank">
                         <i class="fab fa-github"></i>
-                        <span>GitHub</span>
+                        code
                     </a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Section Contact -->
+    <section id="contact" class="section contact-section">
+        <div class="container">
+            <h2 class="section-title">
+                <span class="accent">></span> contact
+            </h2>
+
+            <div class="contact-content">
+                <p class="contact-text">Intéressé par une collaboration ? Discutons ensemble !</p>
+
+                <div class="contact-links">
                     <a href="mailto:jimmyramsamynaick@gmail.com" class="contact-link">
                         <i class="fas fa-envelope"></i>
-                        <span>Email</span>
+                        <span>jimmyramsamynaick@gmail.com</span>
                     </a>
+
+                    <a href="https://github.com/JimmyRamsamynaick" class="contact-link" target="_blank">
+                        <i class="fab fa-github"></i>
+                        <span>github.com/JimmyRamsamynaick</span>
+                    </a>
+
                     <a href="https://linkedin.com/in/jimmyramsamynaick" class="contact-link" target="_blank">
                         <i class="fab fa-linkedin"></i>
-                        <span>LinkedIn</span>
+                        <span>linkedin.com/in/jimmyramsamynaick</span>
                     </a>
+
                     <a href="https://discord.gg/UTrYfA3n58" class="contact-link" target="_blank">
                         <i class="fab fa-discord"></i>
                         <span>Discord</span>
                     </a>
                 </div>
             </div>
-            <div class="contact-form">
-                <form id="contact-form" action="https://formspree.io/f/xvgrvkqr" method="POST">
-                    <div class="form-group">
-                        <input type="text" id="name" name="name" placeholder="Votre nom" required>
-                    </div>
-                    <div class="form-group">
-                        <input type="email" id="email" name="email" placeholder="Votre email" required>
-                    </div>
-                    <div class="form-group">
-                        <textarea id="message" name="message" placeholder="Votre message" rows="5" required></textarea>
-                    </div>
-                    <button type="submit" class="btn btn-primary">Envoyer le message</button>
-                    <div class="form-fallback" style="margin-top: 1rem; text-align: center;">
-                        <p style="font-size: 0.9rem; color: var(--text-secondary);">
-                            Problème avec le formulaire ?
-                            <a href="mailto:jimmyramsamynaick@gmail.com?subject=Contact depuis le portfolio"
-                               style="color: var(--primary-color); text-decoration: none;">
-                                Contactez-moi directement par email
-                            </a>
-                        </p>
-                    </div>
-                </form>
-            </div>
         </div>
-    </div>
-</section>
+    </section>
 
-<!-- Footer -->
-<footer class="footer">
-    <div class="container">
-        <div class="footer-content">
-            <div class="footer-section">
-                <h3>Jimmy Ramsamynaick</h3>
-                <p>Développeur & Technicien Système Réseau Sécurité</p>
-            </div>
-            <div class="footer-section">
-                <h4>Navigation</h4>
-                <ul>
-                    <li><a href="#home">Accueil</a></li>
-                    <li><a href="#about">À propos</a></li>
-                    <li><a href="#skills">Compétences</a></li>
-                    <li><a href="#projects">Projets</a></li>
-                </ul>
-            </div>
-            <div class="footer-section">
-                <h4>Liens utiles</h4>
-                <ul>
-                    <li><a href="https://github.com/JimmyRamsamynaick" target="_blank">GitHub</a></li>
-                    <li><a href="https://expernet-campus.re" target="_blank">Expernet Campus</a></li>
-                    <li><a href="https://www.epitech.eu" target="_blank">Epitech</a></li>
-                </ul>
-            </div>
-            <div class="footer-section">
-                <h4>Contact</h4>
-                <p><i class="fas fa-envelope"></i> jimmyramsamynaick@gmail.com</p>
-                <p><i class="fas fa-map-marker-alt"></i> France</p>
-            </div>
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <p>&copy; 2025 Jimmy Ramsamynaick. Made with <i class="fas fa-heart"></i> in Réunion.</p>
         </div>
-        <div class="footer-bottom">
-            <p>&copy; 2025 Jimmy Ramsamynaick. Tous droits réservés.</p>
+    </footer>
+</div>
+
+<!-- Lecteur audio fixe moderne -->
+<div id="audio-player" class="audio-player">
+    <div class="player-icon">
+        <i class="fas fa-music"></i>
+    </div>
+    <div class="player-info">
+        <div class="track-title" id="player-track-title">Menace Santana - Vendredi 13 Mai 2022</div>
+        <div class="player-controls">
+            <span class="time-current" id="time-current">0:00</span>
+            <div class="progress-container">
+                <div class="progress-bar" id="progress-bar">
+                    <div class="progress-fill" id="progress-fill"></div>
+                    <div class="progress-handle" id="progress-handle"></div>
+                </div>
+            </div>
+            <span class="time-total" id="time-total">0:00</span>
         </div>
     </div>
-</footer>
+    <div class="player-buttons">
+        <button class="player-btn" id="prev-btn">
+            <i class="fas fa-step-backward"></i>
+        </button>
+        <button class="player-btn play-pause-btn" id="play-pause-btn">
+            <i class="fas fa-play"></i>
+        </button>
+        <button class="player-btn" id="next-btn">
+            <i class="fas fa-step-forward"></i>
+        </button>
+    </div>
+</div>
+
+<!-- Lecteur audio invisible -->
+<audio id="bgMusic">
+    <source src="" type="audio/mpeg">
+</audio>
 
 <script src="js/script.js"></script>
 </body>
