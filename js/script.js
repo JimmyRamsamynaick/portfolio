@@ -3,12 +3,12 @@ const musicTracks = [
     {
         title: 'Menace Santana - Vendredi 13 Mai 2022',
         url: './audio/menace-santana.mp3',
-        fallback: false // Maintenant on essaie directement les vrais fichiers
+        fallback: false
     },
     {
         title: 'Eminem - The Real Slim Shady',
         url: './audio/eminem-slim-shady.mp3',
-        fallback: false // Maintenant on essaie directement les vrais fichiers
+        fallback: false
     }
 ];
 
@@ -18,24 +18,31 @@ let isPlaying = false;
 let audioContext = null;
 let currentAudio = null;
 
-// Debug pour vérifier les changements
-function debugTrackChange() {
-    console.log('🎵 Track changed to:', currentTrackIndex, musicTracks[currentTrackIndex].title);
-
-    // Forcer la mise à jour immédiate de tous les éléments
+// Fonction pour mettre à jour tous les titres des lecteurs
+function updateAllPlayerTitles() {
     const playerTrackTitle = document.getElementById('player-track-title');
     const entranceTrackTitle = document.getElementById('entrance-track-title');
     const currentTrack = musicTracks[currentTrackIndex];
 
+    console.log('🔄 Updating all player titles to:', currentTrack?.title);
+
     if (playerTrackTitle && currentTrack) {
         playerTrackTitle.textContent = currentTrack.title;
-        console.log('✅ Updated main player title to:', currentTrack.title);
+        console.log('✅ Updated main player title');
     }
 
     if (entranceTrackTitle && currentTrack) {
         entranceTrackTitle.textContent = currentTrack.title;
-        console.log('✅ Updated entrance player title to:', currentTrack.title);
+        console.log('✅ Updated entrance player title');
     }
+}
+
+// Debug pour vérifier les changements
+function debugTrackChange() {
+    console.log('🎵 Track changed to:', currentTrackIndex, musicTracks[currentTrackIndex].title);
+
+    // Forcer la mise à jour immédiate
+    updateAllPlayerTitles();
 }
 
 // Initialisation
@@ -192,16 +199,8 @@ function initEntranceAudioPlayer() {
     }
 
     // Initialiser l'affichage avec la bonne piste
-    updateEntrancePlayerDisplay();
-}
-
-function updateEntrancePlayerDisplay() {
-    const entranceTrackTitle = document.getElementById('entrance-track-title');
-    const track = musicTracks[currentTrackIndex];
-
-    if (entranceTrackTitle && track) {
-        entranceTrackTitle.textContent = track.title;
-    }
+    updateAllPlayerTitles();
+    updateAllPlayButtons();
 }
 
 function updateEntranceProgress() {
@@ -239,19 +238,29 @@ function updateAllPlayButtons() {
     const playPauseBtn = document.getElementById('play-pause-btn');
     const entrancePlayPauseBtn = document.getElementById('entrance-play-pause-btn');
 
-    const icon = isPlaying ? '<i class="fas fa-pause"></i>' : '<i class="fas fa-play"></i>';
-    const className = isPlaying ? 'playing' : '';
+    console.log('🔄 Updating play buttons, isPlaying:', isPlaying);
+
+    const iconClass = isPlaying ? 'fas fa-pause' : 'fas fa-play';
 
     if (playPauseBtn) {
-        playPauseBtn.innerHTML = icon;
-        playPauseBtn.className = playPauseBtn.className.replace('playing', '') + ' ' + className;
+        playPauseBtn.innerHTML = `<i class="${iconClass}"></i>`;
+        playPauseBtn.className = playPauseBtn.className.replace(/\s*playing\s*/g, '');
+        if (isPlaying) {
+            playPauseBtn.classList.add('playing');
+        }
+        console.log('✅ Updated main play button, isPlaying:', isPlaying);
     }
 
     if (entrancePlayPauseBtn) {
-        entrancePlayPauseBtn.innerHTML = icon;
-        entrancePlayPauseBtn.className = entrancePlayPauseBtn.className.replace('playing', '') + ' ' + className;
+        entrancePlayPauseBtn.innerHTML = `<i class="${iconClass}"></i>`;
+        entrancePlayPauseBtn.className = entrancePlayPauseBtn.className.replace(/\s*playing\s*/g, '');
+        if (isPlaying) {
+            entrancePlayPauseBtn.classList.add('playing');
+        }
+        console.log('✅ Updated entrance play button, isPlaying:', isPlaying);
     }
 }
+
 function initAudioPlayer() {
     const audioPlayer = document.getElementById('audio-player');
     const bgMusic = document.getElementById('bgMusic');
@@ -259,11 +268,6 @@ function initAudioPlayer() {
     const prevBtn = document.getElementById('prev-btn');
     const nextBtn = document.getElementById('next-btn');
     const progressBar = document.getElementById('progress-bar');
-    const progressFill = document.getElementById('progress-fill');
-    const progressHandle = document.getElementById('progress-handle');
-    const timeCurrent = document.getElementById('time-current');
-    const timeTotal = document.getElementById('time-total');
-    const trackTitle = document.getElementById('player-track-title');
 
     // Afficher le lecteur avec animation
     if (audioPlayer) {
@@ -292,10 +296,24 @@ function initAudioPlayer() {
         bgMusic.addEventListener('loadedmetadata', updateDuration);
         bgMusic.addEventListener('timeupdate', updateProgress);
         bgMusic.addEventListener('ended', nextTrack);
+
+        // Event listeners pour détecter les changements d'état
+        bgMusic.addEventListener('play', () => {
+            isPlaying = true;
+            console.log('🎵 Audio started playing');
+            updateAllPlayButtons();
+        });
+
+        bgMusic.addEventListener('pause', () => {
+            isPlaying = false;
+            console.log('⏸️ Audio paused');
+            updateAllPlayButtons();
+        });
     }
 
     // Initialiser l'affichage avec la bonne piste
-    updatePlayerDisplay();
+    updateAllPlayerTitles();
+    updateAllPlayButtons();
 }
 
 function togglePlayPause() {
@@ -306,35 +324,43 @@ function togglePlayPause() {
     if (isPlaying) {
         bgMusic.pause();
         isPlaying = false;
+        console.log('⏸️ Music paused');
     } else {
         // Charger la piste actuelle si nécessaire
         const track = musicTracks[currentTrackIndex];
-        if (bgMusic.src !== window.location.origin + '/' + track.url) {
+        const currentSrc = bgMusic.src.split('/').pop();
+        const trackFile = track.url.split('/').pop();
+
+        if (currentSrc !== trackFile) {
+            console.log('🔄 Loading new track:', track.title);
             bgMusic.src = track.url;
         }
 
         bgMusic.play().then(() => {
             isPlaying = true;
+            console.log('▶️ Music playing:', track.title);
             showNotification(`🎵 ${track.title}`);
         }).catch(e => {
             console.error('Erreur lecture audio:', e);
             showNotification(`❌ Impossible de lire: ${track.title}`);
+            isPlaying = false;
         });
     }
 
-    // Mettre à jour tous les boutons
+    // Mettre à jour tous les boutons et titres
     updateAllPlayButtons();
+    updateAllPlayerTitles();
 }
 
 function previousTrack() {
     currentTrackIndex = currentTrackIndex === 0 ? musicTracks.length - 1 : currentTrackIndex - 1;
-    debugTrackChange(); // Debug
+    debugTrackChange();
     loadAndPlayTrack();
 }
 
 function nextTrack() {
     currentTrackIndex = (currentTrackIndex + 1) % musicTracks.length;
-    debugTrackChange(); // Debug
+    debugTrackChange();
     loadAndPlayTrack();
 }
 
@@ -347,18 +373,17 @@ function loadAndPlayTrack() {
     if (bgMusic && track) {
         bgMusic.src = track.url;
 
-        // Forcer la mise à jour immédiate des deux lecteurs
-        setTimeout(() => {
-            updatePlayerDisplay();
-            updateEntrancePlayerDisplay();
-        }, 10);
+        // Mettre à jour immédiatement tous les affichages
+        updateAllPlayerTitles();
 
         if (isPlaying) {
             bgMusic.play().then(() => {
+                console.log('▶️ Track loaded and playing:', track.title);
                 showNotification(`🎵 ${track.title}`);
             }).catch(e => {
                 console.error('Erreur lecture audio:', e);
                 showNotification(`❌ Impossible de lire: ${track.title}`);
+                isPlaying = false;
             });
         }
 
@@ -419,199 +444,6 @@ function formatTime(seconds) {
     const mins = Math.floor(seconds / 60);
     const secs = Math.floor(seconds % 60);
     return `${mins}:${secs.toString().padStart(2, '0')}`;
-}
-
-function toggleMusic() {
-    const musicToggle = document.getElementById('music-toggle');
-
-    if (!isPlaying) {
-        playCurrentTrack();
-        isPlaying = true;
-        if (musicToggle) {
-            musicToggle.classList.add('active');
-            const icon = musicToggle.querySelector('i');
-            if (icon) icon.className = 'fas fa-pause';
-        }
-    } else {
-        stopMusic();
-        isPlaying = false;
-        if (musicToggle) {
-            musicToggle.classList.remove('active');
-            const icon = musicToggle.querySelector('i');
-            if (icon) icon.className = 'fas fa-music';
-        }
-    }
-}
-
-function playCurrentTrack() {
-    const bgMusic = document.getElementById('bgMusic');
-    const track = musicTracks[currentTrackIndex];
-
-    if (bgMusic && track) {
-        // Arrêter la musique précédente
-        bgMusic.pause();
-        bgMusic.currentTime = 0;
-
-        // Charger et jouer le nouveau fichier
-        bgMusic.src = track.url;
-        bgMusic.volume = 0.5; // Volume normal pour la vraie musique
-        bgMusic.loop = true; // Répéter la musique
-
-        // Essayer de jouer le fichier audio
-        bgMusic.play().then(() => {
-            console.log(`🎵 Lecture de: ${track.title}`);
-            showNotification(`🎵 ${track.title}`);
-        }).catch(e => {
-            console.error('Erreur lecture audio:', e);
-            showNotification(`❌ Impossible de lire: ${track.title}. Vérifiez que le fichier existe.`);
-
-            // Si le fichier n'existe pas, on peut optionnellement revenir au générateur
-            // playGeneratedTone();
-        });
-    }
-}
-
-function playGeneratedTone() {
-    // Créer une ambiance douce et agréable
-    if (!audioContext) {
-        audioContext = new (window.AudioContext || window.webkitAudioContext)();
-    }
-
-    if (currentAudio) {
-        stopCurrentAudio();
-    }
-
-    const oscillators = [];
-    const gainNodes = [];
-
-    // Notes simples et harmonieuses selon la piste
-    const frequencies = currentTrackIndex === 0
-        ? [220, 277.18, 329.63]    // A4, C#5, E5 - Accord de La majeur
-        : [196, 246.94, 293.66];   // G4, B4, D5 - Accord de Sol majeur
-
-    frequencies.forEach((freq, index) => {
-        const oscillator = audioContext.createOscillator();
-        const gainNode = audioContext.createGain();
-        const filterNode = audioContext.createBiquadFilter();
-
-        // Connexions simples
-        oscillator.connect(filterNode);
-        filterNode.connect(gainNode);
-        gainNode.connect(audioContext.destination);
-
-        // Configuration douce
-        oscillator.frequency.setValueAtTime(freq, audioContext.currentTime);
-        oscillator.type = 'sine'; // Seulement des sinus, plus doux
-
-        // Filtre passe-bas doux
-        filterNode.type = 'lowpass';
-        filterNode.frequency.setValueAtTime(800, audioContext.currentTime);
-        filterNode.Q.setValueAtTime(0.5, audioContext.currentTime);
-
-        // Volume très bas et progressif
-        const maxVolume = 0.008; // Volume très réduit
-        gainNode.gain.setValueAtTime(0, audioContext.currentTime);
-        gainNode.gain.linearRampToValueAtTime(maxVolume, audioContext.currentTime + 3);
-
-        oscillator.start(audioContext.currentTime);
-
-        oscillators.push(oscillator);
-        gainNodes.push(gainNode);
-    });
-
-    currentAudio = { oscillators, gainNodes };
-
-    // Variations très subtiles et lentes
-    const variationInterval = setInterval(() => {
-        if (!isPlaying || !currentAudio) {
-            clearInterval(variationInterval);
-            return;
-        }
-
-        oscillators.forEach((osc, index) => {
-            try {
-                const baseFreq = frequencies[index];
-                // Variation très subtile (±1%)
-                const variation = baseFreq * (1 + (Math.random() - 0.5) * 0.02);
-                osc.frequency.exponentialRampToValueAtTime(
-                    variation,
-                    audioContext.currentTime + 2
-                );
-            } catch (e) {
-                clearInterval(variationInterval);
-            }
-        });
-
-    }, 5000); // Variations toutes les 5 secondes seulement
-
-    currentAudio.variationInterval = variationInterval;
-}
-
-function stopCurrentAudio() {
-    if (currentAudio) {
-        // Fade out doux avant l'arrêt
-        if (currentAudio.gainNodes) {
-            currentAudio.gainNodes.forEach(gain => {
-                try {
-                    gain.gain.exponentialRampToValueAtTime(0.0001, audioContext.currentTime + 1);
-                } catch (e) {
-                    // Gain déjà déconnecté
-                }
-            });
-        }
-
-        // Arrêter les oscillateurs après le fade
-        setTimeout(() => {
-            if (currentAudio && currentAudio.oscillators) {
-                currentAudio.oscillators.forEach(osc => {
-                    try {
-                        osc.stop();
-                    } catch (e) {
-                        // Oscillateur déjà arrêté
-                    }
-                });
-            }
-        }, 1000);
-
-        // Arrêter les intervalles
-        if (currentAudio.variationInterval) {
-            clearInterval(currentAudio.variationInterval);
-        }
-    }
-}
-
-function stopMusic() {
-    const bgMusic = document.getElementById('bgMusic');
-
-    if (bgMusic) {
-        bgMusic.pause();
-        bgMusic.currentTime = 0;
-    }
-
-    // Arrêter aussi les sons générés si ils sont encore actifs
-    stopCurrentAudio();
-    currentAudio = null;
-}
-
-function nextTrack() {
-    currentTrackIndex = (currentTrackIndex + 1) % musicTracks.length;
-    updateTrackDisplay();
-
-    if (isPlaying) {
-        stopMusic();
-        setTimeout(() => {
-            // Reprendre la lecture automatiquement
-            isPlaying = true;
-            playCurrentTrack();
-        }, 300);
-    }
-}
-
-function updateTrackDisplay() {
-    const trackDisplay = document.getElementById('current-track');
-    if (trackDisplay) {
-        trackDisplay.textContent = musicTracks[currentTrackIndex].title;
-    }
 }
 
 // === PARTICULES ===
@@ -948,7 +780,7 @@ function loadState() {
                 currentTrackIndex = state.currentTrack;
             }
             updateThemeButtons();
-            updateTrackDisplay();
+            updateAllPlayerTitles();
         } catch (e) {
             console.log('Erreur lors du chargement de l\'état:', e);
         }
