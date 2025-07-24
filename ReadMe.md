@@ -90,7 +90,6 @@ portfolio/
 │   └── style.css          # Styles CSS complets avec système de thèmes
 ├── js/
 │   ├── script.js          # JavaScript principal avec lecteur audio
-│   └── theme-manager.js   # Gestionnaire de thèmes séparé
 ├── audio/                 # Dossier pour les fichiers audio
 │   ├── menace-santana.mp3
 │   └── eminem-slim-shady.mp3

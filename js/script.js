@@ -18,6 +18,93 @@ let isPlaying = false;
 let audioContext = null;
 let currentAudio = null;
 
+// === GESTION DU THÈME CORRIGÉE ===
+function initTheme() {
+    console.log('🎨 Initialisation du thème...');
+
+    const savedTheme = localStorage.getItem('portfolio-theme') || 'dark';
+    console.log('Thème sauvegardé:', savedTheme);
+
+    // Appliquer le thème
+    document.body.setAttribute('data-theme', savedTheme);
+    document.documentElement.setAttribute('data-theme', savedTheme);
+
+    updateThemeButtons();
+
+    // Event listeners pour les boutons de thème - CORRIGÉ
+    setTimeout(() => {
+        const themeButtons = document.querySelectorAll('#theme-toggle, #theme-toggle-nav, .theme-btn, .control-btn');
+        console.log('Boutons de thème trouvés:', themeButtons.length);
+
+        themeButtons.forEach((btn, index) => {
+            console.log(`Bouton ${index}:`, btn.id || btn.className);
+
+            // Supprimer les anciens listeners
+            btn.removeEventListener('click', toggleTheme);
+
+            // Ajouter le nouveau listener
+            btn.addEventListener('click', (e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                console.log('🔄 Bouton thème cliqué!');
+                toggleTheme();
+            });
+        });
+    }, 100);
+}
+
+function toggleTheme() {
+    console.log('🔄 toggleTheme appelé');
+
+    const currentTheme = document.body.getAttribute('data-theme') || 'dark';
+    const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+
+    console.log(`Changement de thème: ${currentTheme} → ${newTheme}`);
+
+    // Appliquer sur body et html
+    document.body.setAttribute('data-theme', newTheme);
+    document.documentElement.setAttribute('data-theme', newTheme);
+
+    // Sauvegarder
+    localStorage.setItem('portfolio-theme', newTheme);
+
+    // Mettre à jour les boutons
+    updateThemeButtons();
+
+    // Notification
+    showNotification(`🎨 Mode ${newTheme === 'dark' ? 'sombre' : 'clair'} activé!`);
+
+    console.log('✅ Thème changé avec succès');
+}
+
+function updateThemeButtons() {
+    const theme = document.body.getAttribute('data-theme') || 'dark';
+    const isLight = theme === 'light';
+
+    console.log('🔄 Mise à jour des boutons, thème actuel:', theme);
+
+    const buttons = [
+        document.getElementById('theme-toggle'),
+        document.getElementById('theme-toggle-nav')
+    ];
+
+    buttons.forEach((btn, index) => {
+        if (btn) {
+            const icon = btn.querySelector('i');
+            const span = btn.querySelector('span');
+
+            if (icon) {
+                icon.className = isLight ? 'fas fa-moon' : 'fas fa-sun';
+                console.log(`Bouton ${index} icône mise à jour:`, icon.className);
+            }
+            if (span) {
+                span.textContent = isLight ? 'Dark' : 'Light';
+                console.log(`Bouton ${index} texte mise à jour:`, span.textContent);
+            }
+        }
+    });
+}
+
 // === FONCTIONS RESPONSIVE ===
 function getDeviceType() {
     const width = window.innerWidth;
@@ -200,6 +287,7 @@ function initSystemThemeDetection() {
         if (!localStorage.getItem('portfolio-theme')) {
             const systemTheme = mediaQuery.matches ? 'dark' : 'light';
             document.body.setAttribute('data-theme', systemTheme);
+            document.documentElement.setAttribute('data-theme', systemTheme);
             updateThemeButtons();
         }
 
@@ -207,6 +295,7 @@ function initSystemThemeDetection() {
             if (!localStorage.getItem('portfolio-theme')) {
                 const newTheme = e.matches ? 'dark' : 'light';
                 document.body.setAttribute('data-theme', newTheme);
+                document.documentElement.setAttribute('data-theme', newTheme);
                 updateThemeButtons();
                 showNotification(`🎨 Thème système: ${newTheme === 'dark' ? 'sombre' : 'clair'}`);
             }
@@ -273,7 +362,10 @@ function initImprovedKeyboardHandling() {
         'm': () => togglePlayPause(),
         'n': () => nextTrack(),
         'p': () => previousTrack(),
-        't': () => toggleTheme(),
+        't': () => {
+            console.log('🎮 Raccourci T pressé');
+            toggleTheme();
+        },
         'escape': () => {
             const navToggle = document.getElementById('nav-toggle');
             const navLinks = document.querySelector('.nav-links');
@@ -360,58 +452,6 @@ function initResponsiveFeatures() {
 
     console.log('✅ Fonctionnalités responsive initialisées');
     console.log(`📱 Appareil détecté: ${getDeviceType()}`);
-}
-
-// === GESTION DU THÈME ===
-function initTheme() {
-    const savedTheme = localStorage.getItem('portfolio-theme') || 'dark';
-    document.body.setAttribute('data-theme', savedTheme);
-    updateThemeButtons();
-
-    // Event listeners pour les boutons de thème
-    const themeButtons = ['theme-toggle', 'theme-toggle-nav'];
-    themeButtons.forEach(id => {
-        const btn = document.getElementById(id);
-        if (btn) {
-            btn.addEventListener('click', toggleTheme);
-        }
-    });
-}
-
-function toggleTheme() {
-    const currentTheme = document.body.getAttribute('data-theme');
-    const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
-
-    document.body.setAttribute('data-theme', newTheme);
-    localStorage.setItem('portfolio-theme', newTheme);
-    updateThemeButtons();
-
-    // Notification
-    showNotification(`Mode ${newTheme === 'dark' ? 'sombre' : 'clair'} activé`);
-}
-
-function updateThemeButtons() {
-    const theme = document.body.getAttribute('data-theme');
-    const isLight = theme === 'light';
-
-    const buttons = [
-        document.getElementById('theme-toggle'),
-        document.getElementById('theme-toggle-nav')
-    ];
-
-    buttons.forEach(btn => {
-        if (btn) {
-            const icon = btn.querySelector('i');
-            const span = btn.querySelector('span');
-
-            if (icon) {
-                icon.className = isLight ? 'fas fa-moon' : 'fas fa-sun';
-            }
-            if (span) {
-                span.textContent = isLight ? 'Dark' : 'Light';
-            }
-        }
-    });
 }
 
 // === NAVIGATION ===
@@ -871,6 +911,7 @@ function showNotification(message, duration = 3000) {
         position: fixed;
         top: ${getDeviceType().includes('mobile') ? '10px' : '20px'};
         right: ${getDeviceType().includes('mobile') ? '10px' : '20px'};
+        left: ${getDeviceType().includes('mobile') ? '10px' : 'auto'};
         background: var(--bg-secondary);
         color: var(--text-primary);
         padding: ${getDeviceType().includes('mobile') ? '0.8rem 1rem' : '1rem 1.5rem'};
@@ -880,23 +921,31 @@ function showNotification(message, duration = 3000) {
         z-index: 10001;
         font-family: 'JetBrains Mono', monospace;
         font-size: ${getDeviceType().includes('mobile') ? '0.8rem' : '0.9rem'};
-        transform: translateX(100%);
-        transition: transform 0.3s ease;
+        transform: translateX(${getDeviceType().includes('mobile') ? '0' : '100%'});
+        transition: transform 0.3s ease, opacity 0.3s ease;
         backdrop-filter: blur(10px);
         max-width: ${getDeviceType().includes('mobile') ? 'calc(100% - 20px)' : '300px'};
         word-wrap: break-word;
+        text-align: center;
+        opacity: 0;
     `;
 
     document.body.appendChild(notification);
 
     // Animation d'entrée
     setTimeout(() => {
-        notification.style.transform = 'translateX(0)';
+        notification.style.opacity = '1';
+        if (!getDeviceType().includes('mobile')) {
+            notification.style.transform = 'translateX(0)';
+        }
     }, 100);
 
     // Auto-suppression
     setTimeout(() => {
-        notification.style.transform = 'translateX(100%)';
+        notification.style.opacity = '0';
+        if (!getDeviceType().includes('mobile')) {
+            notification.style.transform = 'translateX(100%)';
+        }
         setTimeout(() => {
             if (notification.parentNode) {
                 notification.parentNode.removeChild(notification);
@@ -1023,6 +1072,7 @@ function loadState() {
             const state = JSON.parse(saved);
             if (state.theme) {
                 document.body.setAttribute('data-theme', state.theme);
+                document.documentElement.setAttribute('data-theme', state.theme);
             }
             if (state.currentTrack !== undefined) {
                 currentTrackIndex = state.currentTrack;
@@ -1121,11 +1171,13 @@ function prefersReducedMotion() {
 
 // === INITIALISATION PRINCIPALE ===
 document.addEventListener('DOMContentLoaded', function() {
+    console.log('🚀 Initialisation du site...');
+
     // Initialisation responsive en premier
     initResponsiveFeatures();
 
     // Puis vos initialisations existantes
-    initTheme();
+    initTheme(); // Thème corrigé
     initNavigation();
     initAudioPlayer();
     initEntranceAudioPlayer();
@@ -1142,6 +1194,8 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // Ajuster la qualité selon les performances
     adjustQualityForPerformance();
+
+    console.log('✅ Site initialisé avec succès');
 });
 
 // Sauvegarder l'état avant de quitter
@@ -1152,6 +1206,7 @@ window.debugResponsive = debugResponsiveInfo;
 window.getDeviceType = getDeviceType;
 window.isTouchDevice = isTouchDevice;
 window.isLandscape = isLandscape;
+window.toggleTheme = toggleTheme; // Exposer pour debug
 
 // Message console pour les développeurs
 console.log(`
@@ -1174,6 +1229,7 @@ console.log(`
 ║  🚀 Construit avec amour à La Réunion    ║
 ║                                          ║
 ║  🔧 Debug: tapez debugResponsive()       ║
+║  🎨 Debug thème: tapez toggleTheme()     ║
 ╚══════════════════════════════════════════╝
 `);
 
