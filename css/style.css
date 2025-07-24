@@ -1407,56 +1407,132 @@ body {
         font-size: 0.9rem;
     }
 
-    /* Entrance audio mobile */
+    /* Entrance audio mobile - OPTIMISATION COMPLÈTE */
     .entrance-audio-player {
         width: calc(100% - 40px);
         min-width: unset;
         max-width: unset;
         padding: 0.75rem;
         gap: 0.75rem;
+        /* ISOLATION MOBILE RENFORCÉE */
+        position: absolute !important;
+        bottom: 150px !important; /* Éloigné du bouton Enter */
+        left: 20px !important;
+        right: 20px !important;
+        z-index: 2000 !important; /* Z-index encore plus élevé */
+        pointer-events: auto !important;
+        /* Empêche la propagation vers l'écran d'entrée */
+        isolation: isolate;
+        contain: layout style paint;
     }
 
-    .entrance-player-icon {
-        width: 35px;
-        height: 35px;
-        font-size: 1rem;
+    /* Isolation totale de tous les événements sur mobile */
+    .entrance-audio-player,
+    .entrance-audio-player *,
+    .entrance-player-controls,
+    .entrance-player-controls *,
+    .entrance-progress-container,
+    .entrance-progress-bar,
+    .entrance-player-buttons,
+    .entrance-player-btn,
+    .entrance-play-pause-btn {
+        pointer-events: auto !important;
+        z-index: 2001 !important;
+        position: relative;
     }
 
-    .entrance-track-title {
-        font-size: 0.8rem;
-        margin-bottom: 0.4rem;
+    /* Empêche ABSOLUMENT la propagation d'événements */
+    .entrance-audio-player {
+        touch-action: manipulation;
+        -webkit-touch-callout: none;
+        -webkit-user-select: none;
+        user-select: none;
     }
 
-    .entrance-player-controls {
-        gap: 0.5rem;
+    /* Zone morte autour du lecteur pour éviter les clics accidentels */
+    .entrance-audio-player::before {
+        content: '';
+        position: absolute;
+        top: -20px;
+        left: -20px;
+        right: -20px;
+        bottom: -20px;
+        pointer-events: auto;
+        z-index: 1999;
     }
 
-    .entrance-time {
-        font-size: 0.7rem;
-        min-width: 30px;
-    }
-
-    .entrance-progress-container {
-        height: 15px;
-    }
-
-    .entrance-progress-bar {
-        height: 3px;
-    }
-
-    .entrance-player-buttons {
-        gap: 0.25rem;
-    }
-
+    /* Boutons mobiles avec isolation renforcée */
     .entrance-player-btn {
         width: 32px;
         height: 32px;
         font-size: 0.8rem;
+        pointer-events: auto !important;
+        z-index: 2002 !important;
+        touch-action: manipulation;
+        -webkit-tap-highlight-color: transparent;
     }
 
     .entrance-play-pause-btn {
         width: 36px;
         height: 36px;
+        pointer-events: auto !important;
+        z-index: 2002 !important;
+        touch-action: manipulation;
+        -webkit-tap-highlight-color: transparent;
+    }
+
+    /* Barre de progression mobile avec meilleure isolation */
+    .entrance-progress-container {
+        height: 15px;
+        pointer-events: auto !important;
+        z-index: 2003 !important;
+        touch-action: manipulation;
+    }
+
+    .entrance-progress-bar {
+        height: 3px;
+        pointer-events: auto !important;
+        z-index: 2003 !important;
+    }
+
+    /* Textes mobile - isolation complète */
+    .entrance-track-title {
+        font-size: 0.8rem;
+        margin-bottom: 0.4rem;
+        pointer-events: none !important;
+        user-select: none !important;
+        -webkit-user-select: none !important;
+    }
+
+    .entrance-time {
+        font-size: 0.7rem;
+        min-width: 30px;
+        pointer-events: none !important;
+        user-select: none !important;
+        -webkit-user-select: none !important;
+    }
+
+    /* Contrôles mobile avec protection */
+    .entrance-player-controls {
+        gap: 0.5rem;
+        pointer-events: auto !important;
+        z-index: 2001 !important;
+    }
+
+    .entrance-player-buttons {
+        gap: 0.25rem;
+        pointer-events: auto !important;
+        z-index: 2001 !important;
+    }
+
+    /* Icône lecteur mobile */
+    .entrance-player-icon {
+        width: 35px;
+        height: 35px;
+        font-size: 1rem;
+        pointer-events: auto !important;
+        z-index: 2001 !important;
+        touch-action: manipulation;
     }
 
     /* Bouton d'aide mobile - POSITION CORRIGÉE */
@@ -1515,58 +1591,42 @@ body {
 }
 
 @media (max-width: 480px) {
-    /* LECTEUR AUDIO TRÈS PETIT ÉCRAN */
-    .audio-player {
-        bottom: 8px;
-        left: 8px;
-        right: 8px;
-        width: calc(100% - 16px);
-        padding: 0.6rem;
-        gap: 0.5rem;
-    }
-
-    .player-icon {
-        width: 30px;
-        height: 30px;
-        font-size: 0.9rem;
-    }
-
-    .track-title {
-        font-size: 0.75rem;
-        margin-bottom: 0.3rem;
-    }
-
-    .player-controls {
-        gap: 0.4rem;
-    }
-
-    .time-current,
-    .time-total {
-        font-size: 0.65rem;
-        min-width: 25px;
-    }
-
-    .progress-container {
-        height: 12px;
-    }
-
-    .player-btn {
-        width: 28px;
-        height: 28px;
-        font-size: 0.7rem;
-    }
-
-    .play-pause-btn {
-        width: 32px;
-        height: 32px;
-        font-size: 0.8rem;
-    }
-
-    /* Entrance audio très petit écran */
+    /* LECTEUR AUDIO TRÈS PETIT ÉCRAN - ISOLATION MAXIMALE */
     .entrance-audio-player {
         width: calc(100% - 20px);
         padding: 0.6rem;
         gap: 0.5rem;
+        /* Position encore plus éloignée sur très petits écrans */
+        bottom: 160px !important;
+        left: 10px !important;
+        right: 10px !important;
+        z-index: 3000 !important;
+        /* Isolation renforcée */
+        contain: strict;
+        isolation: isolate;
+        will-change: auto;
+    }
+
+    /* Zone de protection élargie pour très petits écrans */
+    .entrance-audio-player::before {
+        top: -30px;
+        left: -30px;
+        right: -30px;
+        bottom: -30px;
+        z-index: 2999 !important;
+    }
+
+    /* Tous les éléments avec z-index maximal */
+    .entrance-audio-player *,
+    .entrance-player-controls *,
+    .entrance-progress-container,
+    .entrance-progress-bar,
+    .entrance-player-buttons *,
+    .entrance-player-btn,
+    .entrance-play-pause-btn {
+        z-index: 3001 !important;
+        pointer-events: auto !important;
+        touch-action: manipulation !important;
     }
 
     .entrance-player-icon {
