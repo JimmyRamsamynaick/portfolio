@@ -2,19 +2,40 @@
 <html lang="fr">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
     <title>Jimmy Ramsamynaick - Dev & TSRS</title>
     <meta name="description" content="Développeur & Technicien Système Réseau Sécurité basé à La Réunion">
-    <link rel="stylesheet" href="css/style.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+
+    <!-- Meta tags améliorés pour le responsive -->
+    <meta name="theme-color" content="#8b5cf6">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="Jimmy.dev">
+
+    <!-- Préchargement optimisé -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="preconnect" href="https://cdnjs.cloudflare.com">
+
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+    <!-- Script inline pour l'initialisation rapide du thème -->
+    <script>
+        (function() {
+            const savedTheme = localStorage.getItem('portfolio-theme');
+            if (savedTheme) {
+                document.documentElement.setAttribute('data-theme', savedTheme);
+            } else if (window.matchMedia && window.matchMedia('(prefers-color-scheme: light)').matches) {
+                document.documentElement.setAttribute('data-theme', 'light');
+            }
+        })();
+    </script>
 </head>
 <body data-theme="dark">
 <!-- Écran d'entrée avec Shīsā -->
 <div id="entrance" class="entrance-screen">
-    <div class="shisa-background"></div>
     <div class="entrance-overlay"></div>
 
     <div class="entrance-content">
@@ -101,58 +122,62 @@
     </nav>
 
     <!-- Section Home -->
-    <section id="home" class="section home-section">
+    <section id="home" class="section home-section" role="banner">
         <div class="container">
             <div class="hero-content">
                 <div class="hero-text">
                     <h1 class="hero-title">
-                        <span class="accent">></span> jimmy.dev
+                        <span class="accent" aria-hidden="true">></span>
+                        <span class="sr-only">Jimmy point dev - </span>jimmy.dev
                     </h1>
                     <p class="hero-subtitle">Développeur & Technicien Système Réseau Sécurité</p>
-                    <p class="hero-location">📍 La Réunion, France</p>
+                    <p class="hero-location">
+                        <span class="sr-only">Localisation: </span>
+                        📍 La Réunion, France
+                    </p>
 
-                    <div class="hero-links">
-                        <a href="mailto:jimmyramsamynaick@gmail.com" class="hero-link">
-                            <i class="fas fa-envelope"></i>
-                            email
+                    <div class="hero-links" role="navigation" aria-label="Liens de contact">
+                        <a href="mailto:jimmyramsamynaick@gmail.com" class="hero-link" aria-label="Envoyer un email">
+                            <i class="fas fa-envelope" aria-hidden="true"></i>
+                            <span>email</span>
                         </a>
-                        <a href="https://github.com/JimmyRamsamynaick" class="hero-link" target="_blank">
-                            <i class="fab fa-github"></i>
-                            github
+                        <a href="https://github.com/JimmyRamsamynaick" class="hero-link" target="_blank" rel="noopener noreferrer" aria-label="Profil GitHub (ouvre dans un nouvel onglet)">
+                            <i class="fab fa-github" aria-hidden="true"></i>
+                            <span>github</span>
                         </a>
-                        <a href="https://linkedin.com/in/jimmyramsamynaick" class="hero-link" target="_blank">
-                            <i class="fab fa-linkedin"></i>
-                            linkedin
+                        <a href="https://linkedin.com/in/jimmyramsamynaick" class="hero-link" target="_blank" rel="noopener noreferrer" aria-label="Profil LinkedIn (ouvre dans un nouvel onglet)">
+                            <i class="fab fa-linkedin" aria-hidden="true"></i>
+                            <span>linkedin</span>
                         </a>
                     </div>
                 </div>
 
                 <div class="hero-terminal">
-                    <div class="terminal">
+                    <div class="terminal" role="complementary" aria-label="Terminal montrant les compétences">
                         <div class="terminal-header">
-                            <div class="terminal-buttons">
-                                <span class="btn-close"></span>
-                                <span class="btn-minimize"></span>
-                                <span class="btn-maximize"></span>
+                            <div class="terminal-buttons" aria-hidden="true">
+                                <span class="btn-close" title="Fermer"></span>
+                                <span class="btn-minimize" title="Réduire"></span>
+                                <span class="btn-maximize" title="Agrandir"></span>
                             </div>
                             <span class="terminal-title">jimmy@dev:~$</span>
                         </div>
                         <div class="terminal-body">
                             <div class="terminal-line">
-                                <span class="prompt">$</span>
+                                <span class="prompt" aria-hidden="true">$</span>
                                 <span class="command">cat skills.txt</span>
                             </div>
-                            <div class="terminal-output">
-                                <div class="skill-item">• C/C++ Development</div>
-                                <div class="skill-item">• Web Technologies (HTML5, CSS3, JS)</div>
-                                <div class="skill-item">• Linux System Administration</div>
-                                <div class="skill-item">• Docker & DevOps</div>
-                                <div class="skill-item">• Network Security</div>
-                                <div class="skill-item">• Bash Scripting</div>
+                            <div class="terminal-output" role="list" aria-label="Liste des compétences">
+                                <div class="skill-item" role="listitem">• C/C++ Development</div>
+                                <div class="skill-item" role="listitem">• Web Technologies (HTML5, CSS3, JS)</div>
+                                <div class="skill-item" role="listitem">• Linux System Administration</div>
+                                <div class="skill-item" role="listitem">• Docker & DevOps</div>
+                                <div class="skill-item" role="listitem">• Network Security</div>
+                                <div class="skill-item" role="listitem">• Bash Scripting</div>
                             </div>
                             <div class="terminal-line">
-                                <span class="prompt">$</span>
-                                <span class="cursor">_</span>
+                                <span class="prompt" aria-hidden="true">$</span>
+                                <span class="cursor" aria-hidden="true">_</span>
                             </div>
                         </div>
                     </div>
@@ -366,40 +391,81 @@
 </div>
 
 <!-- Lecteur audio fixe moderne -->
-<div id="audio-player" class="audio-player">
-    <div class="player-icon">
+<div id="audio-player" class="audio-player" role="region" aria-label="Lecteur audio">
+    <div class="player-icon" aria-hidden="true">
         <i class="fas fa-music"></i>
     </div>
     <div class="player-info">
-        <div class="track-title" id="player-track-title">Menace Santana - Vendredi 13 Mai 2022</div>
+        <div class="track-title" id="player-track-title" aria-live="polite">
+            Menace Santana - Vendredi 13 Mai 2022
+        </div>
         <div class="player-controls">
-            <span class="time-current" id="time-current">0:00</span>
-            <div class="progress-container">
+            <span class="time-current" id="time-current" aria-label="Temps actuel">0:00</span>
+            <div class="progress-container" role="slider" aria-label="Barre de progression audio" tabindex="0">
                 <div class="progress-bar" id="progress-bar">
                     <div class="progress-fill" id="progress-fill"></div>
                     <div class="progress-handle" id="progress-handle"></div>
                 </div>
             </div>
-            <span class="time-total" id="time-total">0:00</span>
+            <span class="time-total" id="time-total" aria-label="Durée totale">0:00</span>
         </div>
     </div>
-    <div class="player-buttons">
-        <button class="player-btn" id="prev-btn">
-            <i class="fas fa-step-backward"></i>
+    <div class="player-buttons" role="group" aria-label="Contrôles de lecture">
+        <button class="player-btn" id="prev-btn" aria-label="Piste précédente" title="Piste précédente (P)">
+            <i class="fas fa-step-backward" aria-hidden="true"></i>
         </button>
-        <button class="player-btn play-pause-btn" id="play-pause-btn">
-            <i class="fas fa-play"></i>
+        <button class="player-btn play-pause-btn" id="play-pause-btn" aria-label="Lecture/Pause" title="Lecture/Pause (Espace)">
+            <i class="fas fa-play" aria-hidden="true"></i>
         </button>
-        <button class="player-btn" id="next-btn">
-            <i class="fas fa-step-forward"></i>
+        <button class="player-btn" id="next-btn" aria-label="Piste suivante" title="Piste suivante (N)">
+            <i class="fas fa-step-forward" aria-hidden="true"></i>
         </button>
     </div>
 </div>
 
+<!-- Bouton d'aide flottant -->
+<button id="help-btn" class="help-btn" style="position: fixed; bottom: 80px; right: 20px; width: 50px; height: 50px; border-radius: 50%; background: var(--accent-primary); border: none; color: white; font-size: 1.2rem; cursor: pointer; z-index: 9998; display: none; box-shadow: var(--shadow-glow); transition: all 0.3s ease;" aria-label="Aide et raccourcis clavier" title="Aide (H)">
+    <i class="fas fa-question" aria-hidden="true"></i>
+</button>
+
 <!-- Lecteur audio invisible -->
-<audio id="bgMusic">
+<audio id="bgMusic" preload="none">
     <source src="" type="audio/mpeg">
+    <p>Votre navigateur ne supporte pas l'élément audio.</p>
 </audio>
+
+<script>
+    // Afficher le bouton d'aide après 3 secondes
+    setTimeout(() => {
+        const helpBtn = document.getElementById('help-btn');
+        if (helpBtn) {
+            helpBtn.style.display = 'block';
+            helpBtn.style.opacity = '0';
+            helpBtn.style.transform = 'scale(0)';
+
+            setTimeout(() => {
+                helpBtn.style.opacity = '1';
+                helpBtn.style.transform = 'scale(1)';
+            }, 100);
+
+            helpBtn.addEventListener('click', () => {
+                if (window.showNotification) {
+                    window.showNotification(`
+🎮 RACCOURCIS CLAVIER:
+• ESPACE/M = Play/Pause
+• N/→ = Piste suivante
+• P/← = Piste précédente
+• T = Basculer le thème
+• H = Cette aide
+• ESC = Fermer menu
+
+📱 Sur mobile: utilisez les boutons tactiles
+                    `, 8000);
+                }
+            });
+        }
+    }, 3000);
+</script>
 
 <script src="js/script.js"></script>
 </body>
