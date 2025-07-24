@@ -276,6 +276,7 @@ body {
     min-width: 400px;
     max-width: 500px;
     box-shadow: 0 8px 32px rgba(139, 92, 246, 0.2);
+    pointer-events: auto; /* Assure que le lecteur peut recevoir les événements */
 }
 
 [data-theme="light"] .entrance-audio-player {
@@ -294,11 +295,13 @@ body {
     color: white;
     font-size: 1.2rem;
     flex-shrink: 0;
+    pointer-events: auto;
 }
 
 .entrance-player-info {
     flex: 1;
     min-width: 0;
+    pointer-events: none; /* Évite les interférences avec les clics */
 }
 
 .entrance-track-title {
@@ -309,12 +312,14 @@ body {
     overflow: hidden;
     text-overflow: ellipsis;
     margin-bottom: 0.5rem;
+    pointer-events: none;
 }
 
 .entrance-player-controls {
     display: flex;
     align-items: center;
     gap: 0.75rem;
+    pointer-events: auto;
 }
 
 .entrance-time {
@@ -322,6 +327,7 @@ body {
     font-size: 0.8rem;
     font-family: 'JetBrains Mono', monospace;
     min-width: 35px;
+    pointer-events: none;
 }
 
 .entrance-progress-container {
@@ -331,6 +337,8 @@ body {
     display: flex;
     align-items: center;
     cursor: pointer;
+    pointer-events: auto; /* Permet les clics sur la barre de progression */
+    z-index: 10; /* S'assure que l'élément est au-dessus */
 }
 
 .entrance-progress-bar {
@@ -339,7 +347,8 @@ body {
     background: rgba(255, 255, 255, 0.2);
     border-radius: 2px;
     position: relative;
-    overflow: hidden;
+    overflow: visible;
+    pointer-events: auto;
 }
 
 [data-theme="light"] .entrance-progress-bar {
@@ -352,12 +361,38 @@ body {
     border-radius: 2px;
     width: 0%;
     transition: width 0.1s ease;
+    position: relative;
+    pointer-events: none; /* Évite les interférences avec les clics */
+}
+
+.entrance-progress-handle {
+    position: absolute;
+    top: 50%;
+    right: -6px;
+    transform: translateY(-50%);
+    width: 12px;
+    height: 12px;
+    background: var(--accent-primary);
+    border-radius: 50%;
+    opacity: 0;
+    transition: opacity 0.2s ease;
+    box-shadow: 0 2px 8px rgba(139, 92, 246, 0.4);
+    pointer-events: auto;
+}
+
+.entrance-progress-container:hover .entrance-progress-handle {
+    opacity: 1;
+}
+
+.entrance-progress-container:hover .entrance-progress-bar {
+    height: 6px;
 }
 
 .entrance-player-buttons {
     display: flex;
     align-items: center;
     gap: 0.5rem;
+    pointer-events: auto;
 }
 
 .entrance-player-btn {
@@ -373,6 +408,8 @@ body {
     justify-content: center;
     transition: all 0.2s ease;
     font-size: 0.9rem;
+    pointer-events: auto; /* Assure que les boutons sont cliquables */
+    z-index: 10;
 }
 
 .entrance-player-btn:hover {
@@ -388,6 +425,8 @@ body {
     border: none;
     color: white;
     font-size: 1rem;
+    pointer-events: auto; /* Assure que le bouton play/pause est cliquable */
+    z-index: 10;
 }
 
 .entrance-play-pause-btn:hover {
