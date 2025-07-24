@@ -263,7 +263,7 @@ body {
     flex-wrap: wrap;
 }
 
-/* LECTEUR AUDIO ENTRANCE */
+/* LECTEUR AUDIO ENTRANCE - ISOLATION COMPLÈTE */
 .entrance-audio-player {
     background: rgba(0, 0, 0, 0.6);
     backdrop-filter: blur(15px);
@@ -276,7 +276,27 @@ body {
     min-width: 400px;
     max-width: 500px;
     box-shadow: 0 8px 32px rgba(139, 92, 246, 0.2);
-    pointer-events: auto; /* Assure que le lecteur peut recevoir les événements */
+    pointer-events: auto;
+    position: relative;
+    z-index: 1000; /* Z-index très élevé pour isolation complète */
+}
+
+/* Isolation complète du lecteur - empêche la propagation vers l'écran d'entrée */
+.entrance-audio-player * {
+    pointer-events: auto !important;
+}
+
+.entrance-audio-player,
+.entrance-audio-player *,
+.entrance-player-controls,
+.entrance-player-controls *,
+.entrance-progress-container,
+.entrance-progress-bar,
+.entrance-player-buttons,
+.entrance-player-btn,
+.entrance-play-pause-btn {
+    position: relative;
+    z-index: 1001 !important;
 }
 
 [data-theme="light"] .entrance-audio-player {
@@ -284,6 +304,22 @@ body {
     border-color: rgba(124, 58, 237, 0.3);
 }
 
+/* Règle d'isolation pour éviter les conflits d'événements */
+.entrance-audio-player {
+    /* Empêche la propagation d'événements vers les éléments parents */
+    isolation: isolate;
+}
+
+/* Assure que tous les clics sur le lecteur ne remontent pas */
+.entrance-audio-player,
+.entrance-audio-player *:not(.entrance-track-title):not(.entrance-time) {
+    -webkit-touch-callout: none;
+    -webkit-user-select: none;
+    -khtml-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+}
 .entrance-player-icon {
     width: 40px;
     height: 40px;
@@ -295,13 +331,15 @@ body {
     color: white;
     font-size: 1.2rem;
     flex-shrink: 0;
-    pointer-events: auto;
+    pointer-events: auto !important;
+    z-index: 1002 !important;
 }
 
 .entrance-player-info {
     flex: 1;
     min-width: 0;
-    pointer-events: none; /* Évite les interférences avec les clics */
+    pointer-events: none;
+    z-index: 1002 !important;
 }
 
 .entrance-track-title {
@@ -312,14 +350,16 @@ body {
     overflow: hidden;
     text-overflow: ellipsis;
     margin-bottom: 0.5rem;
-    pointer-events: none;
+    pointer-events: none !important;
+    user-select: none;
 }
 
 .entrance-player-controls {
     display: flex;
     align-items: center;
     gap: 0.75rem;
-    pointer-events: auto;
+    pointer-events: auto !important;
+    z-index: 1002 !important;
 }
 
 .entrance-time {
@@ -327,7 +367,8 @@ body {
     font-size: 0.8rem;
     font-family: 'JetBrains Mono', monospace;
     min-width: 35px;
-    pointer-events: none;
+    pointer-events: none !important;
+    user-select: none;
 }
 
 .entrance-progress-container {
@@ -337,8 +378,8 @@ body {
     display: flex;
     align-items: center;
     cursor: pointer;
-    pointer-events: auto; /* Permet les clics sur la barre de progression */
-    z-index: 10; /* S'assure que l'élément est au-dessus */
+    pointer-events: auto !important;
+    z-index: 1003 !important;
 }
 
 .entrance-progress-bar {
@@ -348,7 +389,8 @@ body {
     border-radius: 2px;
     position: relative;
     overflow: visible;
-    pointer-events: auto;
+    pointer-events: auto !important;
+    z-index: 1003 !important;
 }
 
 [data-theme="light"] .entrance-progress-bar {
@@ -362,7 +404,7 @@ body {
     width: 0%;
     transition: width 0.1s ease;
     position: relative;
-    pointer-events: none; /* Évite les interférences avec les clics */
+    pointer-events: none !important;
 }
 
 .entrance-progress-handle {
@@ -377,7 +419,8 @@ body {
     opacity: 0;
     transition: opacity 0.2s ease;
     box-shadow: 0 2px 8px rgba(139, 92, 246, 0.4);
-    pointer-events: auto;
+    pointer-events: auto !important;
+    z-index: 1004 !important;
 }
 
 .entrance-progress-container:hover .entrance-progress-handle {
@@ -392,7 +435,8 @@ body {
     display: flex;
     align-items: center;
     gap: 0.5rem;
-    pointer-events: auto;
+    pointer-events: auto !important;
+    z-index: 1002 !important;
 }
 
 .entrance-player-btn {
@@ -408,8 +452,8 @@ body {
     justify-content: center;
     transition: all 0.2s ease;
     font-size: 0.9rem;
-    pointer-events: auto; /* Assure que les boutons sont cliquables */
-    z-index: 10;
+    pointer-events: auto !important;
+    z-index: 1003 !important;
 }
 
 .entrance-player-btn:hover {
@@ -425,8 +469,8 @@ body {
     border: none;
     color: white;
     font-size: 1rem;
-    pointer-events: auto; /* Assure que le bouton play/pause est cliquable */
-    z-index: 10;
+    pointer-events: auto !important;
+    z-index: 1003 !important;
 }
 
 .entrance-play-pause-btn:hover {
