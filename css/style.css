@@ -18,6 +18,14 @@
     --transition-duration: 0.3s;
     --particle-count: 10;
     --player-gap: 1rem;
+
+    /* Variables de synchronisation audio mobile */
+    --audio-sync-width: 100%;
+    --audio-sync-max-width: 350px;
+    --audio-sync-height: 60px;
+    --audio-sync-padding: 12px;
+    --audio-sync-gap: 8px;
+    --audio-sync-border-radius: 12px;
 }
 
 [data-theme="light"] {
@@ -263,11 +271,11 @@ body {
     flex-wrap: wrap;
 }
 
-/* LECTEUR AUDIO ENTRANCE - HARMONISÉ AVEC LE LECTEUR PRINCIPAL */
+/* LECTEUR AUDIO ENTRANCE - DESKTOP */
 .entrance-audio-player {
-    background: rgba(0, 0, 0, 0.9);
-    backdrop-filter: blur(20px);
-    border: 1px solid var(--border-color);
+    background: rgba(0, 0, 0, 0.6);
+    backdrop-filter: blur(15px);
+    border: 1px solid rgba(139, 92, 246, 0.3);
     border-radius: 12px;
     padding: 1rem;
     display: flex;
@@ -279,17 +287,11 @@ body {
     pointer-events: auto;
     position: relative;
     z-index: 1000;
-    transition: all 0.3s ease;
-}
-
-.entrance-audio-player:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 12px 40px rgba(139, 92, 246, 0.2);
 }
 
 [data-theme="light"] .entrance-audio-player {
-    background: rgba(255, 255, 255, 0.95);
-    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+    background: rgba(255, 255, 255, 0.8);
+    border-color: rgba(124, 58, 237, 0.3);
 }
 
 /* Isolation complète du lecteur - empêche la propagation vers l'écran d'entrée */
@@ -449,7 +451,7 @@ body {
     width: 36px;
     height: 36px;
     background: transparent;
-    border: 1px solid var(--border-color);
+    border: 1px solid rgba(139, 92, 246, 0.3);
     border-radius: 6px;
     color: var(--text-secondary);
     cursor: pointer;
@@ -1285,7 +1287,312 @@ body {
     animation: helpPulse 2s infinite;
 }
 
-/* ===== RESPONSIVE MOBILE CORRIGÉ ===== */
+/* ===== SOLUTION COMPLÈTE SYNCHRONISATION MOBILE ===== */
+/* Cascade Layer pour priorité maximale */
+@layer audio-mobile-sync {
+    /* Variables globales de synchronisation */
+    :root {
+        --mobile-audio-width: 100%;
+        --mobile-audio-max-width: 350px;
+        --mobile-audio-height: 60px;
+        --mobile-audio-padding: 12px;
+        --mobile-audio-gap: 8px;
+        --mobile-audio-icon-size: 35px;
+        --mobile-audio-btn-size: 32px;
+        --mobile-audio-play-btn-size: 36px;
+    }
+
+    /* SYNCHRONISATION MOBILE COMPLÈTE */
+    @media (max-width: 768px) {
+        /* Spécificité maximale pour forcer l'application */
+        html body .entrance-audio-player,
+        html body .audio-player {
+            /* Reset complet des styles desktop */
+            all: revert !important;
+
+            /* Dimensions identiques forcées */
+            width: var(--mobile-audio-width) !important;
+            max-width: var(--mobile-audio-max-width) !important;
+            height: var(--mobile-audio-height) !important;
+            min-height: var(--mobile-audio-height) !important;
+
+            /* Layout uniforme */
+            padding: var(--mobile-audio-padding) !important;
+            margin: 0 auto !important;
+            gap: var(--mobile-audio-gap) !important;
+
+            /* Box model identique */
+            box-sizing: border-box !important;
+            display: flex !important;
+            align-items: center !important;
+            justify-content: space-between !important;
+
+            /* Styles visuels uniformes */
+            background: rgba(0, 0, 0, 0.9) !important;
+            backdrop-filter: blur(20px) !important;
+            border: 1px solid var(--border-color) !important;
+            border-radius: var(--audio-sync-border-radius) !important;
+            box-shadow: 0 8px 32px rgba(139, 92, 246, 0.2) !important;
+
+            /* Position et transformation */
+            position: relative !important;
+            transform: none !important;
+            left: auto !important;
+            right: auto !important;
+            bottom: auto !important;
+            top: auto !important;
+        }
+
+        /* Thème clair mobile */
+        [data-theme="light"] html body .entrance-audio-player,
+        [data-theme="light"] html body .audio-player {
+            background: rgba(255, 255, 255, 0.95) !important;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1) !important;
+        }
+
+        /* Icônes synchronisées */
+        html body .entrance-player-icon,
+        html body .player-icon {
+            width: var(--mobile-audio-icon-size) !important;
+            height: var(--mobile-audio-icon-size) !important;
+            font-size: 1rem !important;
+            background: var(--gradient-primary) !important;
+            border-radius: 8px !important;
+            flex-shrink: 0 !important;
+        }
+
+        /* Infos du lecteur synchronisées */
+        html body .entrance-player-info,
+        html body .player-info {
+            flex: 1 !important;
+            min-width: 0 !important;
+            margin-right: 0.5rem !important;
+        }
+
+        /* Titres synchronisés */
+        html body .entrance-track-title,
+        html body .track-title {
+            font-size: 0.8rem !important;
+            margin-bottom: 0.4rem !important;
+            line-height: 1.2 !important;
+            color: var(--text-primary) !important;
+            font-weight: 600 !important;
+            white-space: nowrap !important;
+            overflow: hidden !important;
+            text-overflow: ellipsis !important;
+        }
+
+        /* Contrôles synchronisés */
+        html body .entrance-player-controls,
+        html body .player-controls {
+            display: flex !important;
+            align-items: center !important;
+            gap: 0.5rem !important;
+        }
+
+        /* Temps synchronisés */
+        html body .entrance-time,
+        html body .time-current,
+        html body .time-total {
+            font-size: 0.7rem !important;
+            min-width: 30px !important;
+            color: var(--text-secondary) !important;
+            font-family: 'JetBrains Mono', monospace !important;
+        }
+
+        /* Barres de progression synchronisées */
+        html body .entrance-progress-container,
+        html body .progress-container {
+            flex: 1 !important;
+            height: 15px !important;
+            position: relative !important;
+            display: flex !important;
+            align-items: center !important;
+            cursor: pointer !important;
+        }
+
+        html body .entrance-progress-bar,
+        html body .progress-bar {
+            width: 100% !important;
+            height: 3px !important;
+            background: rgba(255, 255, 255, 0.2) !important;
+            border-radius: 2px !important;
+            position: relative !important;
+            overflow: visible !important;
+        }
+
+        [data-theme="light"] html body .entrance-progress-bar,
+        [data-theme="light"] html body .progress-bar {
+            background: rgba(0, 0, 0, 0.2) !important;
+        }
+
+        html body .entrance-progress-fill,
+        html body .progress-fill {
+            height: 100% !important;
+            background: var(--gradient-primary) !important;
+            border-radius: 2px !important;
+            width: 0% !important;
+            transition: width 0.1s ease !important;
+            position: relative !important;
+        }
+
+        /* Boutons synchronisés */
+        html body .entrance-player-buttons,
+        html body .player-buttons {
+            display: flex !important;
+            align-items: center !important;
+            gap: 0.25rem !important;
+            flex-shrink: 0 !important;
+        }
+
+        html body .entrance-player-btn,
+        html body .player-btn {
+            width: var(--mobile-audio-btn-size) !important;
+            height: var(--mobile-audio-btn-size) !important;
+            font-size: 0.8rem !important;
+            background: transparent !important;
+            border: 1px solid var(--border-color) !important;
+            border-radius: 6px !important;
+            color: var(--text-secondary) !important;
+            cursor: pointer !important;
+            display: flex !important;
+            align-items: center !important;
+            justify-content: center !important;
+            transition: all 0.2s ease !important;
+        }
+
+        html body .entrance-play-pause-btn,
+        html body .play-pause-btn {
+            width: var(--mobile-audio-play-btn-size) !important;
+            height: var(--mobile-audio-play-btn-size) !important;
+            font-size: 0.9rem !important;
+            background: var(--gradient-primary) !important;
+            border: none !important;
+            color: white !important;
+        }
+
+        /* Hover effects synchronisés */
+        html body .entrance-player-btn:hover,
+        html body .player-btn:hover {
+            color: var(--accent-primary) !important;
+            border-color: var(--accent-primary) !important;
+            background: rgba(139, 92, 246, 0.1) !important;
+        }
+
+        html body .entrance-play-pause-btn:hover,
+        html body .play-pause-btn:hover {
+            background: var(--accent-primary) !important;
+            transform: scale(1.02) !important;
+        }
+    }
+
+    /* TRÈS PETIT ÉCRAN - HARMONISATION ULTIME */
+    @media (max-width: 480px) {
+        html body .entrance-audio-player,
+        html body .audio-player {
+            width: calc(100% - 16px) !important;
+            max-width: calc(100% - 16px) !important;
+            padding: 10px !important;
+            gap: 6px !important;
+            height: 55px !important;
+            min-height: 55px !important;
+        }
+
+        html body .entrance-player-icon,
+        html body .player-icon {
+            width: 30px !important;
+            height: 30px !important;
+            font-size: 0.9rem !important;
+        }
+
+        html body .entrance-track-title,
+        html body .track-title {
+            font-size: 0.75rem !important;
+            margin-bottom: 0.3rem !important;
+        }
+
+        html body .entrance-player-controls,
+        html body .player-controls {
+            gap: 0.4rem !important;
+        }
+
+        html body .entrance-time,
+        html body .time-current,
+        html body .time-total {
+            font-size: 0.65rem !important;
+            min-width: 25px !important;
+        }
+
+        html body .entrance-progress-container,
+        html body .progress-container {
+            height: 12px !important;
+        }
+
+        html body .entrance-player-btn,
+        html body .player-btn {
+            width: 28px !important;
+            height: 28px !important;
+            font-size: 0.7rem !important;
+        }
+
+        html body .entrance-play-pause-btn,
+        html body .play-pause-btn {
+            width: 32px !important;
+            height: 32px !important;
+            font-size: 0.8rem !important;
+        }
+    }
+
+    /* POSITIONNEMENT MOBILE SPÉCIFIQUE */
+    @media (max-width: 768px) {
+        /* Lecteur principal mobile */
+        html body .audio-player {
+            position: fixed !important;
+            bottom: 10px !important;
+            left: 10px !important;
+            right: 10px !important;
+            transform: none !important;
+            margin: 0 !important;
+        }
+
+        /* Contrôles d'entrée mobile */
+        html body .entrance-controls {
+            display: flex !important;
+            flex-direction: column !important;
+            align-items: center !important;
+            gap: 1.5rem !important;
+            width: 100% !important;
+        }
+
+        /* Bouton d'aide repositionné */
+        #help-btn {
+            bottom: 85px !important;
+            right: 15px !important;
+            width: 45px !important;
+            height: 45px !important;
+            font-size: 1rem !important;
+        }
+    }
+
+    /* TRÈS PETIT ÉCRAN - POSITIONNEMENT */
+    @media (max-width: 480px) {
+        html body .audio-player {
+            bottom: 8px !important;
+            left: 8px !important;
+            right: 8px !important;
+        }
+
+        #help-btn {
+            bottom: 75px !important;
+            right: 12px !important;
+            width: 40px !important;
+            height: 40px !important;
+            font-size: 0.9rem !important;
+        }
+    }
+}
+
+/* ===== RESPONSIVE MOBILE STANDARD ===== */
 @media (max-width: 768px) {
     /* Navigation mobile */
     .nav-links {
@@ -1340,140 +1647,6 @@ body {
         transform: rotate(-45deg) translate(7px, -6px);
     }
 
-    /* LECTEUR AUDIO MOBILE - CORRIGÉ */
-    .audio-player {
-        position: fixed;
-        bottom: 10px;
-        left: 10px;
-        right: 10px;
-        width: calc(100% - 20px);
-        min-width: unset;
-        max-width: unset;
-        transform: none;
-        padding: 0.75rem;
-        gap: 0.75rem;
-    }
-
-    .audio-player:hover {
-        transform: translateY(-2px);
-    }
-
-    .player-icon {
-        width: 35px;
-        height: 35px;
-        font-size: 1rem;
-        flex-shrink: 0;
-    }
-
-    .player-info {
-        flex: 1;
-        min-width: 0;
-        margin-right: 0.5rem;
-    }
-
-    .track-title {
-        font-size: 0.8rem;
-        margin-bottom: 0.4rem;
-        line-height: 1.2;
-    }
-
-    .player-controls {
-        gap: 0.5rem;
-    }
-
-    .time-current,
-    .time-total {
-        font-size: 0.7rem;
-        min-width: 30px;
-    }
-
-    .progress-container {
-        flex: 1;
-        height: 15px;
-    }
-
-    .progress-bar {
-        height: 3px;
-    }
-
-    .player-buttons {
-        gap: 0.25rem;
-        flex-shrink: 0;
-    }
-
-    .player-btn {
-        width: 32px;
-        height: 32px;
-        font-size: 0.8rem;
-    }
-
-    .play-pause-btn {
-        width: 36px;
-        height: 36px;
-        font-size: 0.9rem;
-    }
-
-    /* Entrance audio mobile */
-    .entrance-audio-player {
-        width: calc(100% - 20px);
-        min-width: unset;
-        max-width: unset;
-        padding: 0.75rem;
-        gap: 0.75rem;
-    }
-
-    .entrance-player-icon {
-        width: 35px;
-        height: 35px;
-        font-size: 1rem;
-    }
-
-    .entrance-track-title {
-        font-size: 0.8rem;
-        margin-bottom: 0.4rem;
-    }
-
-    .entrance-player-controls {
-        gap: 0.5rem;
-    }
-
-    .entrance-time {
-        font-size: 0.7rem;
-        min-width: 30px;
-    }
-
-    .entrance-progress-container {
-        height: 15px;
-    }
-
-    .entrance-progress-bar {
-        height: 3px;
-    }
-
-    .entrance-player-buttons {
-        gap: 0.25rem;
-    }
-
-    .entrance-player-btn {
-        width: 32px;
-        height: 32px;
-        font-size: 0.8rem;
-    }
-
-    .entrance-play-pause-btn {
-        width: 36px;
-        height: 36px;
-    }
-
-    /* Bouton d'aide mobile - POSITION CORRIGÉE */
-    #help-btn {
-        bottom: 120px !important;
-        right: 15px !important;
-        width: 45px !important;
-        height: 45px !important;
-        font-size: 1rem !important;
-    }
-
     /* Sections mobile */
     .section {
         padding: 4rem 0 2rem;
@@ -1481,11 +1654,11 @@ body {
     }
 
     .contact-section {
-        padding-bottom: 140px;
+        padding-bottom: 100px;
     }
 
     .footer {
-        margin-bottom: 100px;
+        margin-bottom: 80px;
     }
 
     /* Autres éléments */
@@ -1518,104 +1691,25 @@ body {
     .container {
         padding: 0 1rem;
     }
+
+    /* Bouton thème mobile adapté */
+    .control-btn {
+        background: rgba(0, 0, 0, 0.9) !important;
+        backdrop-filter: blur(20px) !important;
+        border: 1px solid var(--border-color) !important;
+        border-radius: 8px !important;
+        padding: 0.75rem 1rem !important;
+        color: var(--text-secondary) !important;
+        font-size: 0.9rem !important;
+        transition: all 0.3s ease !important;
+    }
+
+    [data-theme="light"] .control-btn {
+        background: rgba(255, 255, 255, 0.95) !important;
+    }
 }
 
 @media (max-width: 480px) {
-    /* LECTEUR AUDIO TRÈS PETIT ÉCRAN */
-    .audio-player {
-        bottom: 8px;
-        left: 8px;
-        right: 8px;
-        width: calc(100% - 16px);
-        padding: 0.6rem;
-        gap: 0.5rem;
-    }
-
-    .player-icon {
-        width: 30px;
-        height: 30px;
-        font-size: 0.9rem;
-    }
-
-    .track-title {
-        font-size: 0.75rem;
-        margin-bottom: 0.3rem;
-    }
-
-    .player-controls {
-        gap: 0.4rem;
-    }
-
-    .time-current,
-    .time-total {
-        font-size: 0.65rem;
-        min-width: 25px;
-    }
-
-    .progress-container {
-        height: 12px;
-    }
-
-    .player-btn {
-        width: 28px;
-        height: 28px;
-        font-size: 0.7rem;
-    }
-
-    .play-pause-btn {
-        width: 32px;
-        height: 32px;
-        font-size: 0.8rem;
-    }
-
-    /* Entrance audio très petit écran */
-    .entrance-audio-player {
-        width: calc(100% - 16px);
-        padding: 0.6rem;
-        gap: 0.5rem;
-    }
-
-    .entrance-player-icon {
-        width: 30px;
-        height: 30px;
-        font-size: 0.9rem;
-    }
-
-    .entrance-track-title {
-        font-size: 0.75rem;
-        margin-bottom: 0.3rem;
-    }
-
-    .entrance-player-controls {
-        gap: 0.4rem;
-    }
-
-    .entrance-time {
-        font-size: 0.65rem;
-        min-width: 25px;
-    }
-
-    .entrance-player-btn {
-        width: 28px;
-        height: 28px;
-        font-size: 0.7rem;
-    }
-
-    .entrance-play-pause-btn {
-        width: 32px;
-        height: 32px;
-    }
-
-    /* Bouton d'aide très petit écran - POSITION ENCORE PLUS HAUTE */
-    #help-btn {
-        bottom: 110px !important;
-        right: 12px !important;
-        width: 40px !important;
-        height: 40px !important;
-        font-size: 0.9rem !important;
-    }
-
-    /* Autres */
     .entrance-content {
         padding: 1rem;
     }
@@ -1642,18 +1736,18 @@ body {
     }
 
     .contact-section {
-        padding-bottom: 120px;
+        padding-bottom: 85px;
     }
 
     .footer {
-        margin-bottom: 90px;
+        margin-bottom: 70px;
     }
 }
 
 /* Écrans très petits */
 @media (max-width: 320px) {
     #help-btn {
-        bottom: 100px !important;
+        bottom: 70px !important;
         right: 8px !important;
         width: 35px !important;
         height: 35px !important;
@@ -1664,15 +1758,8 @@ body {
 /* Mode paysage mobile */
 @media (max-width: 896px) and (orientation: landscape) {
     #help-btn {
-        bottom: 95px !important;
+        bottom: 65px !important;
         right: 10px !important;
-    }
-
-    .audio-player {
-        bottom: 8px;
-        left: 8px;
-        right: 8px;
-        padding: 0.5rem;
     }
 
     .section {
@@ -1680,11 +1767,11 @@ body {
     }
 
     .contact-section {
-        padding-bottom: 100px;
+        padding-bottom: 80px;
     }
 
     .footer {
-        margin-bottom: 80px;
+        margin-bottom: 60px;
     }
 }
 
@@ -1726,17 +1813,6 @@ body {
 /* Animation pour le lecteur */
 @keyframes playerSlideUp {
     from {
-        transform: translateX(-50%) translateY(100%);
-        opacity: 0;
-    }
-    to {
-        transform: translateX(-50%) translateY(0);
-        opacity: 1;
-    }
-}
-
-@keyframes slideUpMobile {
-    from {
         transform: translateY(100%);
         opacity: 0;
     }
@@ -1748,12 +1824,6 @@ body {
 
 .audio-player.show {
     animation: playerSlideUp 0.5s ease forwards;
-}
-
-@media (max-width: 768px) {
-    .audio-player.show {
-        animation: slideUpMobile 0.5s ease forwards;
-    }
 }
 
 /* Animations supplémentaires */
@@ -1962,198 +2032,3 @@ body {
         color: #666;
     }
 }
-
-/* ===== CORRECTION MOBILE - LECTEURS AUDIO HARMONISÉS ===== */
-
-/* LECTEUR AUDIO ENTRANCE - MOBILE HARMONISÉ */
-@media (max-width: 768px) {
-    .entrance-audio-player {
-        width: calc(100% - 20px) !important; /* Force la même largeur que le lecteur principal */
-        min-width: unset !important;
-        max-width: unset !important;
-        padding: 0.75rem !important; /* Même padding que le lecteur principal */
-        gap: 0.75rem !important; /* Même gap que le lecteur principal */
-        background: rgba(0, 0, 0, 0.9) !important; /* Même background */
-        backdrop-filter: blur(20px) !important; /* Même blur */
-        border-radius: 12px !important; /* Même radius */
-        box-shadow: 0 8px 32px rgba(139, 92, 246, 0.2) !important; /* Même shadow */
-    }
-
-    .entrance-player-icon {
-        width: 35px !important; /* Même taille que le lecteur principal */
-        height: 35px !important;
-        font-size: 1rem !important;
-        background: var(--gradient-primary) !important;
-        border-radius: 8px !important;
-    }
-
-    .entrance-player-info {
-        flex: 1 !important;
-        min-width: 0 !important;
-        margin-right: 0.5rem !important; /* Même marge que le lecteur principal */
-    }
-
-    .entrance-track-title {
-        font-size: 0.8rem !important; /* Même taille que le lecteur principal */
-        margin-bottom: 0.4rem !important;
-        line-height: 1.2 !important;
-        color: var(--text-primary) !important;
-        font-weight: 600 !important;
-    }
-
-    .entrance-player-controls {
-        gap: 0.5rem !important; /* Même gap que le lecteur principal */
-    }
-
-    .entrance-time {
-        font-size: 0.7rem !important; /* Même taille que le lecteur principal */
-        min-width: 30px !important;
-        color: var(--text-secondary) !important;
-        font-family: 'JetBrains Mono', monospace !important;
-    }
-
-    .entrance-progress-container {
-        flex: 1 !important;
-        height: 15px !important; /* Même hauteur que le lecteur principal */
-    }
-
-    .entrance-progress-bar {
-        height: 3px !important; /* Même hauteur que le lecteur principal */
-        background: rgba(255, 255, 255, 0.2) !important;
-        border-radius: 2px !important;
-    }
-
-    .entrance-progress-fill {
-        background: var(--gradient-primary) !important;
-        border-radius: 2px !important;
-        transition: width 0.1s ease !important;
-    }
-
-    .entrance-player-buttons {
-        gap: 0.25rem !important; /* Même gap que le lecteur principal */
-        flex-shrink: 0 !important;
-    }
-
-    .entrance-player-btn {
-        width: 32px !important; /* Même taille que le lecteur principal */
-        height: 32px !important;
-        font-size: 0.8rem !important;
-        background: transparent !important;
-        border: 1px solid var(--border-color) !important;
-        border-radius: 6px !important;
-        color: var(--text-secondary) !important;
-    }
-
-    .entrance-play-pause-btn {
-        width: 36px !important; /* Même taille que le lecteur principal */
-        height: 36px !important;
-        font-size: 0.9rem !important;
-        background: var(--gradient-primary) !important;
-        border: none !important;
-        color: white !important;
-    }
-
-    /* Thème clair pour entrance mobile */
-    [data-theme="light"] .entrance-audio-player {
-        background: rgba(255, 255, 255, 0.95) !important;
-        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1) !important;
-    }
-
-    [data-theme="light"] .entrance-progress-bar {
-        background: rgba(0, 0, 0, 0.2) !important;
-    }
-}
-
-/* TRÈS PETIT ÉCRAN - HARMONISATION COMPLÈTE */
-@media (max-width: 480px) {
-    .entrance-audio-player {
-        width: calc(100% - 16px) !important; /* Même largeur que le lecteur principal */
-        padding: 0.6rem !important; /* Même padding que le lecteur principal */
-        gap: 0.5rem !important; /* Même gap que le lecteur principal */
-    }
-
-    .entrance-player-icon {
-        width: 30px !important; /* Même taille que le lecteur principal */
-        height: 30px !important;
-        font-size: 0.9rem !important;
-    }
-
-    .entrance-track-title {
-        font-size: 0.75rem !important; /* Même taille que le lecteur principal */
-        margin-bottom: 0.3rem !important;
-    }
-
-    .entrance-player-controls {
-        gap: 0.4rem !important; /* Même gap que le lecteur principal */
-    }
-
-    .entrance-time {
-        font-size: 0.65rem !important; /* Même taille que le lecteur principal */
-        min-width: 25px !important;
-    }
-
-    .entrance-progress-container {
-        height: 12px !important; /* Même hauteur que le lecteur principal */
-    }
-
-    .entrance-player-btn {
-        width: 28px !important; /* Même taille que le lecteur principal */
-        height: 28px !important;
-        font-size: 0.7rem !important;
-    }
-
-    .entrance-play-pause-btn {
-        width: 32px !important; /* Même taille que le lecteur principal */
-        height: 32px !important;
-        font-size: 0.8rem !important;
-    }
-}
-
-/* CORRECTION POUR CENTRAGE MOBILE */
-@media (max-width: 768px) {
-    .entrance-controls {
-        display: flex !important;
-        flex-direction: column !important;
-        align-items: center !important;
-        gap: 1.5rem !important;
-        width: 100% !important;
-    }
-
-    .entrance-audio-player {
-        margin: 0 auto !important; /* Centrage automatique */
-        left: 50% !important;
-        transform: translateX(-50%) !important;
-        position: relative !important;
-    }
-}
-
-/* AJUSTEMENT POUR LE BOUTON THÈME */
-@media (max-width: 768px) {
-    .control-btn {
-        background: rgba(0, 0, 0, 0.9) !important; /* Même background que les lecteurs */
-        backdrop-filter: blur(20px) !important;
-        border: 1px solid var(--border-color) !important;
-        border-radius: 8px !important;
-        padding: 0.75rem 1rem !important;
-        color: var(--text-secondary) !important;
-        font-size: 0.9rem !important;
-        transition: all 0.3s ease !important;
-    }
-
-    [data-theme="light"] .control-btn {
-        background: rgba(255, 255, 255, 0.95) !important;
-    }
-}
-
-/* VALIDATION VISUELLE - BORDURES TEMPORAIRES POUR DEBUG */
-/*
-@media (max-width: 768px) {
-    .entrance-audio-player {
-        border: 3px solid red !important;
-    }
-
-    .audio-player {
-        border: 3px solid blue !important;
-    }
-}
-*/
