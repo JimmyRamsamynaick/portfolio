@@ -1962,3 +1962,198 @@ body {
         color: #666;
     }
 }
+
+/* ===== CORRECTION MOBILE - LECTEURS AUDIO HARMONISÉS ===== */
+
+/* LECTEUR AUDIO ENTRANCE - MOBILE HARMONISÉ */
+@media (max-width: 768px) {
+    .entrance-audio-player {
+        width: calc(100% - 20px) !important; /* Force la même largeur que le lecteur principal */
+        min-width: unset !important;
+        max-width: unset !important;
+        padding: 0.75rem !important; /* Même padding que le lecteur principal */
+        gap: 0.75rem !important; /* Même gap que le lecteur principal */
+        background: rgba(0, 0, 0, 0.9) !important; /* Même background */
+        backdrop-filter: blur(20px) !important; /* Même blur */
+        border-radius: 12px !important; /* Même radius */
+        box-shadow: 0 8px 32px rgba(139, 92, 246, 0.2) !important; /* Même shadow */
+    }
+
+    .entrance-player-icon {
+        width: 35px !important; /* Même taille que le lecteur principal */
+        height: 35px !important;
+        font-size: 1rem !important;
+        background: var(--gradient-primary) !important;
+        border-radius: 8px !important;
+    }
+
+    .entrance-player-info {
+        flex: 1 !important;
+        min-width: 0 !important;
+        margin-right: 0.5rem !important; /* Même marge que le lecteur principal */
+    }
+
+    .entrance-track-title {
+        font-size: 0.8rem !important; /* Même taille que le lecteur principal */
+        margin-bottom: 0.4rem !important;
+        line-height: 1.2 !important;
+        color: var(--text-primary) !important;
+        font-weight: 600 !important;
+    }
+
+    .entrance-player-controls {
+        gap: 0.5rem !important; /* Même gap que le lecteur principal */
+    }
+
+    .entrance-time {
+        font-size: 0.7rem !important; /* Même taille que le lecteur principal */
+        min-width: 30px !important;
+        color: var(--text-secondary) !important;
+        font-family: 'JetBrains Mono', monospace !important;
+    }
+
+    .entrance-progress-container {
+        flex: 1 !important;
+        height: 15px !important; /* Même hauteur que le lecteur principal */
+    }
+
+    .entrance-progress-bar {
+        height: 3px !important; /* Même hauteur que le lecteur principal */
+        background: rgba(255, 255, 255, 0.2) !important;
+        border-radius: 2px !important;
+    }
+
+    .entrance-progress-fill {
+        background: var(--gradient-primary) !important;
+        border-radius: 2px !important;
+        transition: width 0.1s ease !important;
+    }
+
+    .entrance-player-buttons {
+        gap: 0.25rem !important; /* Même gap que le lecteur principal */
+        flex-shrink: 0 !important;
+    }
+
+    .entrance-player-btn {
+        width: 32px !important; /* Même taille que le lecteur principal */
+        height: 32px !important;
+        font-size: 0.8rem !important;
+        background: transparent !important;
+        border: 1px solid var(--border-color) !important;
+        border-radius: 6px !important;
+        color: var(--text-secondary) !important;
+    }
+
+    .entrance-play-pause-btn {
+        width: 36px !important; /* Même taille que le lecteur principal */
+        height: 36px !important;
+        font-size: 0.9rem !important;
+        background: var(--gradient-primary) !important;
+        border: none !important;
+        color: white !important;
+    }
+
+    /* Thème clair pour entrance mobile */
+    [data-theme="light"] .entrance-audio-player {
+        background: rgba(255, 255, 255, 0.95) !important;
+        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1) !important;
+    }
+
+    [data-theme="light"] .entrance-progress-bar {
+        background: rgba(0, 0, 0, 0.2) !important;
+    }
+}
+
+/* TRÈS PETIT ÉCRAN - HARMONISATION COMPLÈTE */
+@media (max-width: 480px) {
+    .entrance-audio-player {
+        width: calc(100% - 16px) !important; /* Même largeur que le lecteur principal */
+        padding: 0.6rem !important; /* Même padding que le lecteur principal */
+        gap: 0.5rem !important; /* Même gap que le lecteur principal */
+    }
+
+    .entrance-player-icon {
+        width: 30px !important; /* Même taille que le lecteur principal */
+        height: 30px !important;
+        font-size: 0.9rem !important;
+    }
+
+    .entrance-track-title {
+        font-size: 0.75rem !important; /* Même taille que le lecteur principal */
+        margin-bottom: 0.3rem !important;
+    }
+
+    .entrance-player-controls {
+        gap: 0.4rem !important; /* Même gap que le lecteur principal */
+    }
+
+    .entrance-time {
+        font-size: 0.65rem !important; /* Même taille que le lecteur principal */
+        min-width: 25px !important;
+    }
+
+    .entrance-progress-container {
+        height: 12px !important; /* Même hauteur que le lecteur principal */
+    }
+
+    .entrance-player-btn {
+        width: 28px !important; /* Même taille que le lecteur principal */
+        height: 28px !important;
+        font-size: 0.7rem !important;
+    }
+
+    .entrance-play-pause-btn {
+        width: 32px !important; /* Même taille que le lecteur principal */
+        height: 32px !important;
+        font-size: 0.8rem !important;
+    }
+}
+
+/* CORRECTION POUR CENTRAGE MOBILE */
+@media (max-width: 768px) {
+    .entrance-controls {
+        display: flex !important;
+        flex-direction: column !important;
+        align-items: center !important;
+        gap: 1.5rem !important;
+        width: 100% !important;
+    }
+
+    .entrance-audio-player {
+        margin: 0 auto !important; /* Centrage automatique */
+        left: 50% !important;
+        transform: translateX(-50%) !important;
+        position: relative !important;
+    }
+}
+
+/* AJUSTEMENT POUR LE BOUTON THÈME */
+@media (max-width: 768px) {
+    .control-btn {
+        background: rgba(0, 0, 0, 0.9) !important; /* Même background que les lecteurs */
+        backdrop-filter: blur(20px) !important;
+        border: 1px solid var(--border-color) !important;
+        border-radius: 8px !important;
+        padding: 0.75rem 1rem !important;
+        color: var(--text-secondary) !important;
+        font-size: 0.9rem !important;
+        transition: all 0.3s ease !important;
+    }
+
+    [data-theme="light"] .control-btn {
+        background: rgba(255, 255, 255, 0.95) !important;
+    }
+}
+
+/* VALIDATION VISUELLE - BORDURES TEMPORAIRES POUR DEBUG */
+/*
+@media (max-width: 768px) {
+    .entrance-audio-player {
+        border: 3px solid red !important;
+    }
+
+    .audio-player {
+        border: 3px solid blue !important;
+    }
+}
+*/
