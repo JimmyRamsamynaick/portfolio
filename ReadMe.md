@@ -1,69 +1,67 @@
-# ✦ Immersive Portfolio Experience
+# ✦ Expérience Portfolio Immersive
 
-> *An experimental web journey crafting a cinematic product-like reveal for a developer portfolio.*
-
-![Portfolio Preview](https://i.imgur.com/your-preview-image.png)
+> *Une exploration web expérimentale créant une révélation cinématique digne d'un lancement de produit pour un portfolio de développeur.*
 
 ## ✨ Concept
 
-Designed to break away from traditional static portfolios, this project treats the developer's profile as a high-end product launch. Inspired by Apple's keynotes and Awwwards-winning immersive experiences, it leverages **WebGL**, **smooth scrolling**, and **physics-based interactions** to create a seamless flow.
+Conçu pour rompre avec les portfolios statiques traditionnels, ce projet traite le profil du développeur comme un lancement de produit haut de gamme. Inspiré par les keynotes d'Apple et les expériences immersives primées sur Awwwards, il exploite **WebGL**, le **défilement fluide** et des **interactions basées sur la physique** pour créer un flux continu.
 
-The goal? To evoke a "Wow" effect immediately upon entry.
+L'objectif ? Provoquer un effet "Wow" immédiat dès l'entrée.
 
-## 🚀 Tech Stack
+## 🚀 Stack Technique
 
-Built with a focus on performance, fluidity, and modern web capabilities.
+Construit avec un accent sur la performance, la fluidité et les capacités web modernes.
 
-| Core | Visuals & Animation |
+| Cœur | Visuels & Animation |
 | :--- | :--- |
-| **Vite** (Build Tool) | **Three.js / React Three Fiber** (WebGL) |
-| **React** (Framework) | **Framer Motion** (Cinematic Transitions) |
-| **Tailwind CSS** (Styling) | **Lenis** (Inertial Smooth Scroll) |
+| **Vite** (Outil de Build) | **Three.js / React Three Fiber** (WebGL) |
+| **React** (Framework) | **Framer Motion** (Transitions Cinématiques) |
+| **Tailwind CSS** (Styling) | **Lenis** (Défilement Fluide Inertiel) |
 
-## 🎬 Key Features
+## 🎬 Fonctionnalités Clés
 
-*   **Cinematic Intro**: A 3D WebGL entrance sequence that sets the tone.
-*   **Fluid Navigation**: Lenis-powered smooth scrolling for a premium feel.
-*   **Magnetic Interactions**: Buttons and interactive elements that respond to cursor physics.
-*   **Apple-style Project Showcase**: Projects reveal progressively with scroll-driven animations, focus effects, and glassmorphism.
-*   **Responsive Design**: A mobile-first approach ensuring the experience translates to all devices.
+*   **Intro Cinématique** : Une séquence d'entrée 3D WebGL qui donne le ton.
+*   **Navigation Fluide** : Défilement fluide propulsé par Lenis pour une sensation premium.
+*   **Interactions Magnétiques** : Boutons et éléments interactifs qui répondent à la physique du curseur.
+*   **Vitrine de Projets style Apple** : Les projets se révèlent progressivement avec des animations pilotées par le défilement, des effets de focus et du glassmorphism.
+*   **Design Responsive** : Une approche mobile-first assurant que l'expérience se traduit sur tous les appareils.
 
 ## 🛠️ Installation
 
-To run this experience locally:
+Pour lancer cette expérience localement :
 
 ```bash
-# Clone the repository
+# Cloner le dépôt
 git clone https://github.com/JimmyRamsamynaick/portfolio.git
 
-# Navigate to project directory
+# Naviguer dans le dossier du projet
 cd portfolio
 
-# Install dependencies
+# Installer les dépendances
 npm install
 
-# Start development server
+# Démarrer le serveur de développement
 npm run dev
 ```
 
-## 📦 Build & Deploy
+## 📦 Build & Déploiement
 
-This project is configured for automated deployment to **GitHub Pages**.
+Ce projet est configuré pour un déploiement automatisé sur **GitHub Pages**.
 
 ```bash
-# Build for production
+# Construire pour la production
 npm run build
 
-# Deploy to gh-pages branch
+# Déployer sur la branche gh-pages
 npm run deploy
 ```
 
-## 👨‍💻 Author
+## 👨‍💻 Auteur
 
 **Jimmy Ramsamynaick**
 *   📍 La Réunion, France
-*   💼 Developer & Network Security Technician
+*   💼 Développeur & Technicien Sécurité Réseau
 
 ---
 
-*© 2026 Jimmy Ramsamynaick. Made with React & WebGL.*
+*© 2026 Jimmy Ramsamynaick. Fait avec React & WebGL.*
